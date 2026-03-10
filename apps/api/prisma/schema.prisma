@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Team {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  homeMatches Match[] @relation("HomeTeam")
+  awayMatches Match[] @relation("AwayTeam")
+}
+
+model Match {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  homeScore Int?
+  awayScore Int?
+  createdAt DateTime @default(now())
+
+  homeTeamId Int
+  awayTeamId Int
+  homeTeam   Team @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam   Team @relation("AwayTeam", fields: [awayTeamId], references: [id])
+
+  prediction Prediction?
+}
+
+model Prediction {
+  id             Int   @id @default(autoincrement())
+  predictedHome  Int
+  predictedAway  Int
+  createdAt      DateTime @default(now())
+
+  matchId Int   @unique
+  match   Match @relation(fields: [matchId], references: [id])
+}

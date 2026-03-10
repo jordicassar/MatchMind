@@ -1,0 +1,14 @@
+
+{
+  "name": "la-liga-soccer-predictor",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "api": "npm run dev --workspace=apps/api",
+    "web": "npm run dev --workspace=apps/web"
+  }
+}
