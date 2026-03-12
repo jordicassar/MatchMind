@@ -3,7 +3,8 @@ import cors from "cors";
 import prisma from "./db";
 import teamRoutes from "./routes/teams";
 import matchRoutes from "./routes/matches";
-import predictionRoutes from "./routes/predictions"
+import predictionRoutes from "./routes/predictions";
+import syncRoutes from "./routes/sync";
 
 const app = Express();
 
@@ -12,7 +13,7 @@ app.use(Express.json());
 app.use("/api/teams", teamRoutes);
 app.use("/api/matches", matchRoutes);
 app.use("/api/predictions", predictionRoutes);
-
+app.use("/api/sync", syncRoutes);
 
 app.get("/health", async (req, res) => {
   try {
