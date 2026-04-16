@@ -14,6 +14,7 @@ model Team {
 
   homeMatches Match[] @relation("HomeTeam")
   awayMatches Match[] @relation("AwayTeam")
+  crest       String  ?
 }
 
 model Match {

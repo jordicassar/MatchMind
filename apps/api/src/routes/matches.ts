@@ -20,6 +20,7 @@ router.put('/:id', async (req, res) => {
         // Extract matchID
         const { id }  = req.params;
 
+        // Get homeScore & awayScore from body
         const {homeScore, awayScore} = req.body;
 
         const updateMatch = await prisma.match.update({where: {id: Number(id)}, data: {homeScore, awayScore}});

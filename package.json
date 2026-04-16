@@ -1,6 +1,5 @@
-
 {
-  "name": "la-liga-soccer-predictor",
+  "name": "match_mind",
   "version": "1.0.0",
   "private": true,
   "workspaces": [
@@ -9,6 +8,10 @@
   ],
   "scripts": {
     "api": "npm run dev --workspace=apps/api",
-    "web": "npm run dev --workspace=apps/web"
+    "web": "npm run dev --workspace=apps/web",
+    "dev": "concurrently \"npm run api\" \"npm run web\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

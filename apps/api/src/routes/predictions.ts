@@ -51,7 +51,6 @@ router.post('/', async (req, res) =>{
         const matchPrediction = await prisma.prediction.create({data:{predictedHome, predictedAway, matchId}})
         res.status(201).json(matchPrediction);
 
-
     }
     catch(error){
         res.status(500).json({message: "Unable to post predictions"})
