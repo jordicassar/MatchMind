@@ -52,14 +52,18 @@ export default function Home() {
   ? matches.filter(match => match.homeTeamId === selectedTeam || match.awayTeamId === selectedTeam)
   : matches;
     
-  console.log(teams);
   return (
     <div className="bg-gray-900 text-white min-h-screen p-8">
       <header className="text-6xl font-bold text-center mt-15 mb-10 font-poppins text-emerald-400">MatchMind</header>
-    
       {/* Team Cards */}
+      <header className="text-6xl font-bold text-center mt-15 mb-10 font-poppins text-emerald-400">Teams</header>
       <div className="grid grid-cols-4 gap-4">
-        {teams.map((team)=>(<p className="bg-gray-800 p-6 rounded-lg text-center hover:bg-gray-700 transition cursor-pointer" key={team.id} onClick={() => setSelectedTeam(team.id)}>{team.name}</p>))}
+        {teams.map((team)=>(
+          <div 
+            className="bg-gray-800 p-6 rounded-lg text-center hover:bg-gray-700 transition cursor-pointer" key={team.id} onClick={() => setSelectedTeam(team.id)}>
+            <img src={team.crest} alt={team.name} className="w-12 h-12 mx-auto mb-2"/>
+            <p>{team.name}</p>
+          </div>))}
       </div>
 
       {selectedTeam !== null && <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1 rounded mt-2" onClick={() =>{
@@ -71,7 +75,17 @@ export default function Home() {
       <div className="grid grid-cols-4 gap-4">
         {filteredMatches.map((match) => (
         <div className="bg-gray-800 p-4 rounded-lg text-center hover:bg-gray-700 transition cursor-pointer" key={match.id}>
-          <p>{match.homeTeam.name} vs {match.awayTeam.name}</p>
+          <div className="flex items-center justify-center gap-4">
+            <div className="flex flex-col items-center w-24">
+              <img src={match.homeTeam.crest} alt={match.homeTeam.name} className="w-8 h-8" />
+              <span className="text-xs mt-1 text-center break-words w-full min-h-[2.5rem]">{match.homeTeam.name}</span>
+            </div>
+            <span>vs</span>
+            <div className="flex flex-col items-center w-24">
+              <img src={match.awayTeam.crest} alt={match.awayTeam.name} className="w-8 h-8" />
+              <span className="text-xs mt-1 text-center break-words w-full min-h-[2.5rem]">{match.awayTeam.name}</span>
+            </div>
+          </div>
           <p className={match.homeScore !== null ? "text-emerald-400 font-bold" : "text-gray-400"}>
             {match.homeScore !== null ? `${match.homeScore} - ${match.awayScore}` : "Upcoming"}
           </p>

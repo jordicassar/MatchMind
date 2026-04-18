@@ -48,7 +48,7 @@ router.post('/', async (req, res) =>{
         const predictedAway = awayMatches.length > 0 ? Math.round(awayTotal / awayWeight) : 0;
 
         // Extracts predictedHome, predictedAway & matchId for match Prediction
-        const matchPrediction = await prisma.prediction.create({data:{predictedHome, predictedAway, matchId}})
+        const matchPrediction = await prisma.prediction.upsert({where:{matchId}, create:{predictedHome, predictedAway, matchId}, update:{predictedHome, predictedAway}})
         res.status(201).json(matchPrediction);
 
     }
