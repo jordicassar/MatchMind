@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState} from "react";
-import "./globals.css"
+import "./globals.css";
+import Link from "next/link";
 
 
 export default function Home() {
@@ -56,11 +57,13 @@ export default function Home() {
     <div className="bg-gray-900 text-white min-h-screen p-8">
       <header className="text-6xl font-bold text-center mt-15 mb-10 font-poppins text-emerald-400">MatchMind</header>
       {/* Team Cards */}
-      <header className="text-6xl font-bold text-center mt-15 mb-10 font-poppins text-emerald-400">Teams</header>
+      <header className="mt-30 text-6xl font-bold text-center mt-15 mb-10 font-poppins text-emerald-400">Teams</header>
       <div className="grid grid-cols-4 gap-4">
         {teams.map((team)=>(
           <div 
-            className="bg-gray-800 p-6 rounded-lg text-center hover:bg-gray-700 transition cursor-pointer" key={team.id} onClick={() => setSelectedTeam(team.id)}>
+            className={`bg-gray-800 p-6 rounded-lg text-center hover:bg-gray-700 transition cursor-pointer ${selectedTeam === team.id ? "ring-2 ring-emerald-400" : ""}`}
+            key={team.id} 
+            onClick={() => setSelectedTeam(team.id)}>
             <img src={team.crest} alt={team.name} className="w-12 h-12 mx-auto mb-2"/>
             <p>{team.name}</p>
           </div>))}
@@ -69,8 +72,9 @@ export default function Home() {
       {selectedTeam !== null && <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1 rounded mt-2" onClick={() =>{
         setSelectedTeam(null)
       }}>Show All</button>}
+      {/* <Link href="/accuracy" className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded float-right">View Accuracy</Link> */}
+
       <header className="text-6xl font-bold text-center mt-15 mb-10 font-poppins text-emerald-400">Matches</header>
-    
       {/* Match Cards */}
       <div className="grid grid-cols-4 gap-4">
         {filteredMatches.map((match) => (
