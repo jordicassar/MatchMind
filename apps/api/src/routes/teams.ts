@@ -32,22 +32,39 @@ router.post('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try{
         const id = parseInt(req.params.id);
-        const team = await prisma.team.findUnique({where: { id }});
-
-        // Error handling if a team isn't found
+        const team = await prisma.team.findUnique({ where: { id }});
         if(!team){
-            res.status(404).json({ mesage: "Team not found"});
+            res.status(404).json({message: "Team not found"});
             return;
         }
+        const matches = await prisma.match.findMany({include: {homeTeam: true, awayTeam: true}, orderBy: {date:"desc"}, where: { OR : [{ homeTeamId: id}, {awayTeamId: id}]}})
+        const homeMatches = await prisma.match.findMany({
+            where: { homeTeamId: id, homeScore: {not: null}}
+        });
+        const awayMatches = await prisma.match.findMany({
+            where: { awayTeamId: id, awayScore: {not: null}}
+        });
+        const wins = homeMatches.filter(m => (m.homeScore ?? 0) > (m.awayScore ?? 0)).length +
+        awayMatches.filter(m => (m.awayScore ?? 0) > (m.homeScore ?? 0)).length;
+        
+        const losses = homeMatches.filter(m => (m.homeScore ?? 0) < (m.awayScore ?? 0)).length +
+        awayMatches.filter(m => (m.awayScore ?? 0) < (m.homeScore ?? 0)).length;
 
-        // API Endpoint 
-        const response = await fetch(`https://api.football-data.org/v4/teams/${team.externalId}`, { headers: { "X-Auth-Token": process.env.FOOTBALL_DATA_API_KEY ?? ""}});
-        const data = await response.json();
-        res.json(data);
+        const draws = homeMatches.filter(m => m.homeScore !== null && m.awayScore !== null && m.homeScore === m.awayScore).length + awayMatches.filter(m => m.homeScore !== null && m.awayScore !== null && m.awayScore === m.homeScore).length;
 
+        const goalsScored = homeMatches.reduce((sum, m) => sum + (m.homeScore ?? 0), 0) + awayMatches.reduce((sum, m) => sum + (m.awayScore ?? 0), 0);
+        
+        const goalsConceded = homeMatches.reduce((sum, m) => sum + (m.awayScore ?? 0), 0) + awayMatches.reduce((sum, m) => sum + (m.homeScore ?? 0), 0);
+
+        const matchesPlayed = wins + draws + losses;
+
+        res.status(200).json({team, stats: {
+            wins, losses, draws, goalsScored, goalsConceded, matchesPlayed: wins + draws + losses
+            }, matches
+        });
     }
     catch(error){
-        res.status(500).json({message: "Failed to fetch team IDs"});
+        res.status(500).json({message: "Failed to fetch team"})
     }
 })
 
