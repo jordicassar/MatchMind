@@ -14,9 +14,6 @@ export default function Accuracy(){
         fetchAccuracy();
     }, []);
 
-
-    
-    
     return(
 
         <div className="bg-gray-900 text-white min-h-screen p-8">
