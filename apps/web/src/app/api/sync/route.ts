@@ -17,8 +17,11 @@ export async function POST() {
         update: { crest: match.teams.away.logo, externalId: match.teams.away.id },
         create: { name: match.teams.away.name, crest: match.teams.away.logo, externalId: match.teams.away.id },
       });
-      await prisma.match.create({
-        data: {
+      await prisma.match.upsert({
+        where: { externalId: match.fixture.id},
+        update: { homeScore: match.goals.home, awayScore: match.goals.away},
+        create: {
+          externalId: match.fixture.id,
           homeTeamId: homeTeam.id,
           awayTeamId: awayTeam.id,
           date: new Date(match.fixture.date),
