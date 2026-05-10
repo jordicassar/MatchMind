@@ -30,8 +30,8 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
 
   const statTiles = [
     { label: "Wins",           value: team.stats.wins,          icon: Trophy,       color: "text-chart-1" },
-    { label: "Losses",         value: team.stats.losses,        icon: XCircle,      color: "text-chart-2" },
     { label: "Draws",          value: team.stats.draws,         icon: Minus,        color: "text-chart-3" },
+    { label: "Losses",         value: team.stats.losses,        icon: XCircle,      color: "text-chart-2" },
     { label: "Upcoming",       value: upcomingMatches.length,   icon: Calendar,     color: "text-chart-4" },
     { label: "Played",         value: team.stats.matchesPlayed, icon: BarChart3,    color: "text-muted-foreground" },
     { label: "Goals Scored",   value: team.stats.goalsScored,   icon: TrendingUp,   color: "text-chart-1" },
