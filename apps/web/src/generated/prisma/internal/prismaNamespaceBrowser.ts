@@ -91,6 +91,7 @@ export type TeamScalarFieldEnum = (typeof TeamScalarFieldEnum)[keyof typeof Team
 
 export const MatchScalarFieldEnum = {
   id: 'id',
+  externalId: 'externalId',
   date: 'date',
   homeScore: 'homeScore',
   awayScore: 'awayScore',

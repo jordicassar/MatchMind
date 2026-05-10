@@ -28,6 +28,7 @@ export type AggregateMatch = {
 
 export type MatchAvgAggregateOutputType = {
   id: number | null
+  externalId: number | null
   homeScore: number | null
   awayScore: number | null
   homeTeamId: number | null
@@ -36,6 +37,7 @@ export type MatchAvgAggregateOutputType = {
 
 export type MatchSumAggregateOutputType = {
   id: number | null
+  externalId: number | null
   homeScore: number | null
   awayScore: number | null
   homeTeamId: number | null
@@ -44,6 +46,7 @@ export type MatchSumAggregateOutputType = {
 
 export type MatchMinAggregateOutputType = {
   id: number | null
+  externalId: number | null
   date: Date | null
   homeScore: number | null
   awayScore: number | null
@@ -54,6 +57,7 @@ export type MatchMinAggregateOutputType = {
 
 export type MatchMaxAggregateOutputType = {
   id: number | null
+  externalId: number | null
   date: Date | null
   homeScore: number | null
   awayScore: number | null
@@ -64,6 +68,7 @@ export type MatchMaxAggregateOutputType = {
 
 export type MatchCountAggregateOutputType = {
   id: number
+  externalId: number
   date: number
   homeScore: number
   awayScore: number
@@ -76,6 +81,7 @@ export type MatchCountAggregateOutputType = {
 
 export type MatchAvgAggregateInputType = {
   id?: true
+  externalId?: true
   homeScore?: true
   awayScore?: true
   homeTeamId?: true
@@ -84,6 +90,7 @@ export type MatchAvgAggregateInputType = {
 
 export type MatchSumAggregateInputType = {
   id?: true
+  externalId?: true
   homeScore?: true
   awayScore?: true
   homeTeamId?: true
@@ -92,6 +99,7 @@ export type MatchSumAggregateInputType = {
 
 export type MatchMinAggregateInputType = {
   id?: true
+  externalId?: true
   date?: true
   homeScore?: true
   awayScore?: true
@@ -102,6 +110,7 @@ export type MatchMinAggregateInputType = {
 
 export type MatchMaxAggregateInputType = {
   id?: true
+  externalId?: true
   date?: true
   homeScore?: true
   awayScore?: true
@@ -112,6 +121,7 @@ export type MatchMaxAggregateInputType = {
 
 export type MatchCountAggregateInputType = {
   id?: true
+  externalId?: true
   date?: true
   homeScore?: true
   awayScore?: true
@@ -209,6 +219,7 @@ export type MatchGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type MatchGroupByOutputType = {
   id: number
+  externalId: number | null
   date: Date
   homeScore: number | null
   awayScore: number | null
@@ -242,6 +253,7 @@ export type MatchWhereInput = {
   OR?: Prisma.MatchWhereInput[]
   NOT?: Prisma.MatchWhereInput | Prisma.MatchWhereInput[]
   id?: Prisma.IntFilter<"Match"> | number
+  externalId?: Prisma.IntNullableFilter<"Match"> | number | null
   date?: Prisma.DateTimeFilter<"Match"> | Date | string
   homeScore?: Prisma.IntNullableFilter<"Match"> | number | null
   awayScore?: Prisma.IntNullableFilter<"Match"> | number | null
@@ -255,6 +267,7 @@ export type MatchWhereInput = {
 
 export type MatchOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  externalId?: Prisma.SortOrderInput | Prisma.SortOrder
   date?: Prisma.SortOrder
   homeScore?: Prisma.SortOrderInput | Prisma.SortOrder
   awayScore?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -268,6 +281,7 @@ export type MatchOrderByWithRelationInput = {
 
 export type MatchWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  externalId?: number
   AND?: Prisma.MatchWhereInput | Prisma.MatchWhereInput[]
   OR?: Prisma.MatchWhereInput[]
   NOT?: Prisma.MatchWhereInput | Prisma.MatchWhereInput[]
@@ -280,10 +294,11 @@ export type MatchWhereUniqueInput = Prisma.AtLeast<{
   homeTeam?: Prisma.XOR<Prisma.TeamScalarRelationFilter, Prisma.TeamWhereInput>
   awayTeam?: Prisma.XOR<Prisma.TeamScalarRelationFilter, Prisma.TeamWhereInput>
   prediction?: Prisma.XOR<Prisma.PredictionNullableScalarRelationFilter, Prisma.PredictionWhereInput> | null
-}, "id">
+}, "id" | "externalId">
 
 export type MatchOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  externalId?: Prisma.SortOrderInput | Prisma.SortOrder
   date?: Prisma.SortOrder
   homeScore?: Prisma.SortOrderInput | Prisma.SortOrder
   awayScore?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -302,6 +317,7 @@ export type MatchScalarWhereWithAggregatesInput = {
   OR?: Prisma.MatchScalarWhereWithAggregatesInput[]
   NOT?: Prisma.MatchScalarWhereWithAggregatesInput | Prisma.MatchScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"Match"> | number
+  externalId?: Prisma.IntNullableWithAggregatesFilter<"Match"> | number | null
   date?: Prisma.DateTimeWithAggregatesFilter<"Match"> | Date | string
   homeScore?: Prisma.IntNullableWithAggregatesFilter<"Match"> | number | null
   awayScore?: Prisma.IntNullableWithAggregatesFilter<"Match"> | number | null
@@ -311,6 +327,7 @@ export type MatchScalarWhereWithAggregatesInput = {
 }
 
 export type MatchCreateInput = {
+  externalId?: number | null
   date: Date | string
   homeScore?: number | null
   awayScore?: number | null
@@ -322,6 +339,7 @@ export type MatchCreateInput = {
 
 export type MatchUncheckedCreateInput = {
   id?: number
+  externalId?: number | null
   date: Date | string
   homeScore?: number | null
   awayScore?: number | null
@@ -332,6 +350,7 @@ export type MatchUncheckedCreateInput = {
 }
 
 export type MatchUpdateInput = {
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -343,6 +362,7 @@ export type MatchUpdateInput = {
 
 export type MatchUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -354,6 +374,7 @@ export type MatchUncheckedUpdateInput = {
 
 export type MatchCreateManyInput = {
   id?: number
+  externalId?: number | null
   date: Date | string
   homeScore?: number | null
   awayScore?: number | null
@@ -363,6 +384,7 @@ export type MatchCreateManyInput = {
 }
 
 export type MatchUpdateManyMutationInput = {
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -371,6 +393,7 @@ export type MatchUpdateManyMutationInput = {
 
 export type MatchUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -391,6 +414,7 @@ export type MatchOrderByRelationAggregateInput = {
 
 export type MatchCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  externalId?: Prisma.SortOrder
   date?: Prisma.SortOrder
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
@@ -401,6 +425,7 @@ export type MatchCountOrderByAggregateInput = {
 
 export type MatchAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  externalId?: Prisma.SortOrder
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
   homeTeamId?: Prisma.SortOrder
@@ -409,6 +434,7 @@ export type MatchAvgOrderByAggregateInput = {
 
 export type MatchMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  externalId?: Prisma.SortOrder
   date?: Prisma.SortOrder
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
@@ -419,6 +445,7 @@ export type MatchMaxOrderByAggregateInput = {
 
 export type MatchMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  externalId?: Prisma.SortOrder
   date?: Prisma.SortOrder
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
@@ -429,6 +456,7 @@ export type MatchMinOrderByAggregateInput = {
 
 export type MatchSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  externalId?: Prisma.SortOrder
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
   homeTeamId?: Prisma.SortOrder
@@ -539,6 +567,7 @@ export type MatchUpdateOneRequiredWithoutPredictionNestedInput = {
 }
 
 export type MatchCreateWithoutHomeTeamInput = {
+  externalId?: number | null
   date: Date | string
   homeScore?: number | null
   awayScore?: number | null
@@ -549,6 +578,7 @@ export type MatchCreateWithoutHomeTeamInput = {
 
 export type MatchUncheckedCreateWithoutHomeTeamInput = {
   id?: number
+  externalId?: number | null
   date: Date | string
   homeScore?: number | null
   awayScore?: number | null
@@ -568,6 +598,7 @@ export type MatchCreateManyHomeTeamInputEnvelope = {
 }
 
 export type MatchCreateWithoutAwayTeamInput = {
+  externalId?: number | null
   date: Date | string
   homeScore?: number | null
   awayScore?: number | null
@@ -578,6 +609,7 @@ export type MatchCreateWithoutAwayTeamInput = {
 
 export type MatchUncheckedCreateWithoutAwayTeamInput = {
   id?: number
+  externalId?: number | null
   date: Date | string
   homeScore?: number | null
   awayScore?: number | null
@@ -617,6 +649,7 @@ export type MatchScalarWhereInput = {
   OR?: Prisma.MatchScalarWhereInput[]
   NOT?: Prisma.MatchScalarWhereInput | Prisma.MatchScalarWhereInput[]
   id?: Prisma.IntFilter<"Match"> | number
+  externalId?: Prisma.IntNullableFilter<"Match"> | number | null
   date?: Prisma.DateTimeFilter<"Match"> | Date | string
   homeScore?: Prisma.IntNullableFilter<"Match"> | number | null
   awayScore?: Prisma.IntNullableFilter<"Match"> | number | null
@@ -642,6 +675,7 @@ export type MatchUpdateManyWithWhereWithoutAwayTeamInput = {
 }
 
 export type MatchCreateWithoutPredictionInput = {
+  externalId?: number | null
   date: Date | string
   homeScore?: number | null
   awayScore?: number | null
@@ -652,6 +686,7 @@ export type MatchCreateWithoutPredictionInput = {
 
 export type MatchUncheckedCreateWithoutPredictionInput = {
   id?: number
+  externalId?: number | null
   date: Date | string
   homeScore?: number | null
   awayScore?: number | null
@@ -677,6 +712,7 @@ export type MatchUpdateToOneWithWhereWithoutPredictionInput = {
 }
 
 export type MatchUpdateWithoutPredictionInput = {
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -687,6 +723,7 @@ export type MatchUpdateWithoutPredictionInput = {
 
 export type MatchUncheckedUpdateWithoutPredictionInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -697,6 +734,7 @@ export type MatchUncheckedUpdateWithoutPredictionInput = {
 
 export type MatchCreateManyHomeTeamInput = {
   id?: number
+  externalId?: number | null
   date: Date | string
   homeScore?: number | null
   awayScore?: number | null
@@ -706,6 +744,7 @@ export type MatchCreateManyHomeTeamInput = {
 
 export type MatchCreateManyAwayTeamInput = {
   id?: number
+  externalId?: number | null
   date: Date | string
   homeScore?: number | null
   awayScore?: number | null
@@ -714,6 +753,7 @@ export type MatchCreateManyAwayTeamInput = {
 }
 
 export type MatchUpdateWithoutHomeTeamInput = {
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -724,6 +764,7 @@ export type MatchUpdateWithoutHomeTeamInput = {
 
 export type MatchUncheckedUpdateWithoutHomeTeamInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -734,6 +775,7 @@ export type MatchUncheckedUpdateWithoutHomeTeamInput = {
 
 export type MatchUncheckedUpdateManyWithoutHomeTeamInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -742,6 +784,7 @@ export type MatchUncheckedUpdateManyWithoutHomeTeamInput = {
 }
 
 export type MatchUpdateWithoutAwayTeamInput = {
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -752,6 +795,7 @@ export type MatchUpdateWithoutAwayTeamInput = {
 
 export type MatchUncheckedUpdateWithoutAwayTeamInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -762,6 +806,7 @@ export type MatchUncheckedUpdateWithoutAwayTeamInput = {
 
 export type MatchUncheckedUpdateManyWithoutAwayTeamInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  externalId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -773,6 +818,7 @@ export type MatchUncheckedUpdateManyWithoutAwayTeamInput = {
 
 export type MatchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  externalId?: boolean
   date?: boolean
   homeScore?: boolean
   awayScore?: boolean
@@ -786,6 +832,7 @@ export type MatchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 
 export type MatchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  externalId?: boolean
   date?: boolean
   homeScore?: boolean
   awayScore?: boolean
@@ -798,6 +845,7 @@ export type MatchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 
 export type MatchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  externalId?: boolean
   date?: boolean
   homeScore?: boolean
   awayScore?: boolean
@@ -810,6 +858,7 @@ export type MatchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 
 export type MatchSelectScalar = {
   id?: boolean
+  externalId?: boolean
   date?: boolean
   homeScore?: boolean
   awayScore?: boolean
@@ -818,7 +867,7 @@ export type MatchSelectScalar = {
   awayTeamId?: boolean
 }
 
-export type MatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "date" | "homeScore" | "awayScore" | "createdAt" | "homeTeamId" | "awayTeamId", ExtArgs["result"]["match"]>
+export type MatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "externalId" | "date" | "homeScore" | "awayScore" | "createdAt" | "homeTeamId" | "awayTeamId", ExtArgs["result"]["match"]>
 export type MatchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   homeTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   awayTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
@@ -842,6 +891,7 @@ export type $MatchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
+    externalId: number | null
     date: Date
     homeScore: number | null
     awayScore: number | null
@@ -1275,6 +1325,7 @@ export interface Prisma__MatchClient<T, Null = never, ExtArgs extends runtime.Ty
  */
 export interface MatchFieldRefs {
   readonly id: Prisma.FieldRef<"Match", 'Int'>
+  readonly externalId: Prisma.FieldRef<"Match", 'Int'>
   readonly date: Prisma.FieldRef<"Match", 'DateTime'>
   readonly homeScore: Prisma.FieldRef<"Match", 'Int'>
   readonly awayScore: Prisma.FieldRef<"Match", 'Int'>

@@ -25,11 +25,12 @@ model Team {
 }
 
 model Match {
-  id        Int      @id @default(autoincrement())
-  date      DateTime
-  homeScore Int?
-  awayScore Int?
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  externalId  Int?     @unique
+  date        DateTime
+  homeScore   Int?
+  awayScore   Int?
+  createdAt   DateTime @default(now())
 
   homeTeamId Int
   awayTeamId Int
