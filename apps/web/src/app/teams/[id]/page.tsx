@@ -5,7 +5,7 @@
 // and a colour-coded match history (green = win, red = loss, amber = draw).
 "use client";
 import { useEffect, useState, use } from "react";
-import { Trophy, XCircle, Minus, Calendar, BarChart3, TrendingUp, TrendingDown } from "lucide-react";
+import { Trophy, XCircle, Minus, Calendar, BarChart3, TrendingUp, TrendingDown, User, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import PageWrapper from "@/components/layout/PageWrapper";
@@ -52,6 +52,18 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
                 LaLiga 2024/25
               </Badge>
               <span className="text-sm text-muted-foreground">{winRate}% win rate</span>
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+              {team.team.manager && (
+                <span className="flex items-center gap-1">
+                  <User className="h-3.5 w-3.5" />{team.team.manager}
+                </span>
+              )}
+              {team.team.stadium && (
+                <span className="flex items-center gap-1">
+                  <MapPin className="h-3.5 w-3.5" />{team.team.stadium}{team.team.stadiumCity ? `, ${team.team.stadiumCity}` : ""}{team.team.stadiumCapacity ? ` · ${team.team.stadiumCapacity.toLocaleString()}` : ""}
+                </span>
+              )}
             </div>
           </div>
         </div>

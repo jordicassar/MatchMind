@@ -5,6 +5,7 @@
 // and displays the AI-generated score once returned.
 // For the team detail page match card with result colour coding, see HistoryCard.tsx.
 "use client";
+import Link from "next/link";
 import { Loader2, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -21,7 +22,7 @@ export default function MatchCard({ match, prediction, isLoading, onPredict }: P
   const isUpcoming = match.homeScore === null;
 
   return (
-    <div className="flex flex-col rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md hover:shadow-primary/5">
+    <Link href={`/matches/${match.id}`} className="flex flex-col rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md hover:shadow-primary/5">
       <div className="mb-3 flex justify-end">
         <Badge
           variant={isUpcoming ? "outline" : "secondary"}
@@ -77,6 +78,6 @@ export default function MatchCard({ match, prediction, isLoading, onPredict }: P
           )}
         </div>
       )}
-    </div>
+    </Link>
   );
 }

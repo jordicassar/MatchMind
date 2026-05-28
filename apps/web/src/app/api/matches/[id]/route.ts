@@ -22,3 +22,19 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ message: "Failed to update match" }, { status: 500 });
   }
 }
+
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }>}){
+  try{
+    const { id } = await params;
+    
+    const match = await prisma.match.findUnique({
+      where: { id: Number(id)},
+      include: { homeTeam: true, awayTeam: true, prediction: true},
+    });
+
+    if (!match) return NextResponse.json({ message: "Match not found"}, { status: 404});
+    return NextResponse.json(match);
+  } catch {
+    return NextResponse.json({message : "Failed to fetch match"}, { status: 500});
+  }
+}

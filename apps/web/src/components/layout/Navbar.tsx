@@ -5,11 +5,12 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Brain, BarChart3 } from "lucide-react";
+import { Brain, BarChart3, List } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/", label: "Home" },
+  { href: "/standings", label: "Standings", icon: List},
   { href: "/accuracy", label: "Accuracy", icon: BarChart3 },
 ];
 
