@@ -22,6 +22,7 @@ model Team {
   stadiumImage  String?
   manager     String?
   managerPhoto String?
+  players Player[]
 }
 
 model Match {
@@ -48,4 +49,15 @@ model Prediction {
 
   matchId Int   @unique
   match   Match @relation(fields: [matchId], references: [id])
+}
+
+model Player {
+  id            Int   @id @default(autoincrement())
+  externalId    Int?  @unique
+  name          String?
+  nationality   String?
+  position      String?
+  photo         String?
+  teamId        Int
+  team          Team  @relation(fields: [teamId], references: [id])
 }

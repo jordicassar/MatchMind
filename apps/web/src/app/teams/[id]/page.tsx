@@ -1,3 +1,4 @@
+
 // Team detail page — displays a full profile for a single team.
 // The team ID comes from the dynamic URL segment (/teams/[id]) and is used
 // to fetch that team's stats and match history from /api/teams/:id.
@@ -10,9 +11,13 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import PageWrapper from "@/components/layout/PageWrapper";
 import HistoryCard from "@/components/match/HistoryCard";
+import MatchCard from "@/components/match/MatchCard";
 
 export default function TeamDetail({ params }: { params: Promise<{ id: string }> }) {
   const [team, setTeam] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<"upcoming" | "history" | "squad">("upcoming");
+  const [isLoading, setIsLoading] = useState<number | null>(null);
+  const [storePrediction, setStorePrediction] = useState<Record<number, any>>({});
   const { id } = use(params);
 
   useEffect(() => {
@@ -37,6 +42,18 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
     { label: "Goals Scored",   value: team.stats.goalsScored,   icon: TrendingUp,   color: "text-chart-1" },
     { label: "Goals Conceded", value: team.stats.goalsConceded, icon: TrendingDown, color: "text-chart-2" },
   ];
+
+  async function fetchPrediction(matchId: number) {
+    setIsLoading(matchId);
+    const res = await fetch("/api/predictions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ matchId }),
+    });
+    const data = await res.json();
+    setStorePrediction((prev) => ({ ...prev, [matchId]: data }));
+    setIsLoading(null);
+  }
 
   return (
     <PageWrapper>
@@ -80,33 +97,86 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
         ))}
       </div>
 
-      {/* Upcoming matches */}
-      <section className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-foreground">Upcoming Matches</h2>
-        {upcomingMatches.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No upcoming matches.</p>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {upcomingMatches.map((match: any) => (
-              <HistoryCard key={match.id} match={match} teamId={teamId} />
-            ))}
-          </div>
-        )}
-      </section>
+      {/* Tabs */}
+      <div className="mb-6 flex gap-1 rounded-xl border border-border bg-card p-1">
+        {[
+          { key: "upcoming", label: "Upcoming Matches" },
+          { key: "history", label: "Past Matches"} ,
+          { key: "squad", label: "Squad" },
+        ].map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setActiveTab(key as any)}
+            className={cn(
+              "flex-1 rounded-lg py-2 text-sm font-medium transition-colors",
+              activeTab === key 
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground" 
+            )}
+          >
+          {label}
+          </button>
+        ))} 
+      </div>
+      {/* Tab content */}
 
-      {/* Match history */}
-      <section>
-        <h2 className="mb-4 text-2xl font-bold text-foreground">Match History</h2>
-        {playedMatches.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No matches played yet.</p>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {playedMatches.map((match: any) => (
+      {/* Upcoming Matches Tab */}
+      {activeTab === "upcoming" && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {upcomingMatches.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No upcoming matches.</p>
+          ) : (
+            upcomingMatches.map((match: any) => (
+              <MatchCard
+                key={match.id}
+                match={match}
+                prediction={storePrediction[match.id]}
+                isLoading={isLoading === match.id}
+                onPredict={() => fetchPrediction(match.id)}
+              />
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Match History Tab */}
+      {activeTab === "history" && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {playedMatches.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No matches played yet.</p>
+          ) : (
+            playedMatches.map((match: any) => (
               <HistoryCard key={match.id} match={match} teamId={teamId} />
-            ))}
-          </div>
-        )}
-      </section>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Squad Tab */}
+      {activeTab === "squad" && (
+        <div>
+          {["Goalkeeper", "Defender", "Midfielder", "Attacker"].map((pos) => {
+            const group = team.players.filter((p:any) => p.position === pos);
+            if (group.length === 0) return null;
+            return (
+              <div key={pos} className="mb-6">
+                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">{pos}s</h3>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                  {group.map((p: any) => (
+                    <div key={p.id} className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
+                      {p.photo && <img src={p.photo} alt={p.name} className="h-10 w-10 rounded-full object-cover" />}
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{p.name}</p>
+                        <p className="text-[11px] text-muted-foreground">{p.nationality}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </PageWrapper>
   );
 }

@@ -4,6 +4,7 @@
 // team being viewed and applies colour-coded left border and badge accordingly:
 // green = win, red = loss, amber = draw.
 // For the home page match card with prediction functionality, see MatchCard.tsx.
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import TeamSlot from "./TeamSlot";
@@ -44,9 +45,10 @@ export default function HistoryCard({ match, teamId }: Props) {
   const isPlayed = match.homeScore !== null;
 
   return (
-    <div
+    <Link
+      href={`/matches/${match.id}`}
       className={cn(
-        "rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md hover:shadow-primary/5",
+        "block rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md hover:shadow-primary/5",
         result && borderStyle[result]
       )}
     >
@@ -73,6 +75,6 @@ export default function HistoryCard({ match, teamId }: Props) {
         </div>
         <TeamSlot crest={match.awayTeam.crest} name={match.awayTeam.name} />
       </div>
-    </div>
+    </Link>
   );
 }
