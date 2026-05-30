@@ -31,6 +31,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
                         { homeTeamId: match.awayTeamId, awayTeamId: match.homeTeamId },
                     ],
                 },
+                include: { homeTeam: true, awayTeam: true },
                 orderBy: { date: "desc"},
             }),
         ]);
@@ -71,10 +72,19 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
             h2hCount: h2hMatches.length,
             h2hRecord,
             blendUsed: h2hMatches.length > 0 ? "form+h2h" : "form-only",
+            h2hMatches: h2hMatches.map((m) => ({
+                id: m.id,
+                date: m.date,
+                homeTeam: m.homeTeam.name,
+                awayTeam: m.awayTeam.name,
+                homeScore: m.homeScore,
+                awayScore: m.awayScore,
+            })),
         });
 
 
     } catch {
         return NextResponse.json({ message: "Failed to compute breakdown"}, { status: 500 });
+        
     }
 }

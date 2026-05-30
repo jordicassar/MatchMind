@@ -9,7 +9,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     const team = await prisma.team.findUnique({ where: { id } });
     if (!team) return NextResponse.json({ message: "Team not found" }, { status: 404 });
 
-    const [matches, homeMatches, awayMatches] = await Promise.all([
+    const [matches, homeMatches, awayMatches, players] = await Promise.all([
       prisma.match.findMany({
         include: { homeTeam: true, awayTeam: true },
         orderBy: { date: "desc" },
@@ -17,6 +17,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       }),
       prisma.match.findMany({ where: { homeTeamId: id, homeScore: { not: null } } }),
       prisma.match.findMany({ where: { awayTeamId: id, awayScore: { not: null } } }),
+      prisma.player.findMany({ where: { teamId: id}, orderBy: { name: "asc" }, 
+      }),
     ]);
 
     const wins =
@@ -42,7 +44,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({
       team,
       stats: { wins, losses, draws, goalsScored, goalsConceded, matchesPlayed: wins + draws + losses },
-      matches,
+      matches, players, 
     });
   } catch {
     return NextResponse.json({ message: "Failed to fetch team" }, { status: 500 });

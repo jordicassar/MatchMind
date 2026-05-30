@@ -10,7 +10,7 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   try {
     const matches = await prisma.match.findMany({
-      include: { homeTeam: true, awayTeam: true },
+      include: { homeTeam: true, awayTeam: true, prediction: true },
       orderBy: { date: "desc" },
     });
     return NextResponse.json(matches);

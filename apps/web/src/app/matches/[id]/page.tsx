@@ -143,6 +143,47 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
               </p>
             </div>
           )}
+
+          {breakdown && breakdown.h2hCount > 0 && (
+            <div className="mt-6 rounded-2xl border border-border bg-card p-6">
+              <h2 className="mb-4 text-lg font-bold text-foreground">Head-to-Head</h2>
+              
+              {/* Record summary */}
+              <div className="mb-6 flex justify-between gap-3">
+                <div className="flex-1 rounded-lg border border-border bg-background p-3 text-center">
+                  <p className="text-2xl font-bold text-chart-1">{breakdown.h2hRecord.homeWins}</p>
+                  <p className="text-[11px] text-muted-foreground">{match.homeTeam.name}</p>
+                </div>
+                <div className="flex-1 rounded-lg border border-border bg-background p-3 text-center">
+                  <p className="text-2xl font-bold text-muted-foreground">{breakdown.h2hRecord.draws}</p>
+                  <p className="text-[11px] text-muted-foreground">Draws</p>
+                </div>
+                <div className="flex-1 rounded-lg border border-border bg-background p-3 text-center">
+                  <p className="text-2xl font-bold text-chart-2">{breakdown.h2hRecord.awayWins}</p>
+                  <p className="text-[11px] text-muted-foreground">{match.awayTeam.name}</p>
+                </div>
+              </div>
+
+              {/* Past meetings */}
+              {breakdown.h2hMatches?.length > 0 && (
+                <div className="space-y-2">
+                  <p className="mb-3 text-[11px] uppercase tracking-wider text-muted-foreground">Past Meetings</p>
+                  {breakdown.h2hMatches.map((m: any) => (
+                    <div key={m.id} className="flex items-center justify-between rounded-lg border border-border bg-background px-4 py-2 text-sm">
+                      <span className="w-1/3 truncate text-muted-foreground">{m.homeTeam}</span>
+                      <div className="flex flex-col items-center">
+                        <span className="font-bold text-foreground">{m.homeScore} - {m.awayScore}</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {new Date(m.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                        </span>
+                      </div>
+                      <span className="w-1/3 truncate text-right text-muted-foreground">{m.awayTeam}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </PageWrapper>
