@@ -6,10 +6,11 @@
 import { useEffect, useState } from "react";
 import { Brain, CheckCircle2, Target } from "lucide-react";
 import PageWrapper from "@/components/layout/PageWrapper";
+import type { Accuracy as AccuracyData } from "@/lib/types";
 
 export default function Accuracy() {
     // Holds the accuracy data returned from the API
-    const [accuracy, setAccuracy] = useState<any>(null);
+    const [accuracy, setAccuracy] = useState<AccuracyData | null>(null);
 
     // Fetch accuracy stats once on mount
     useEffect(() => {
@@ -21,13 +22,8 @@ export default function Accuracy() {
     // Only show stats if at least one prediction has been made
     const hasPredictions = accuracy && accuracy.totalPredictions > 0;
 
-    // Normalise accuracy to a 0-100 number regardless of whether
-    // the API returns a string ("75%"), a percentage (75), or a decimal (0.75)
-    const pct = hasPredictions
-        ? typeof accuracy.accuracy === "string"
-            ? parseFloat(accuracy.accuracy.replace("%", ""))
-            : Math.round(Number(accuracy.accuracy) > 1 ? accuracy.accuracy : accuracy.accuracy * 100)
-        : 0;
+    // The API returns accuracy as a 0-100 percentage; round it for display
+    const pct = accuracy ? Math.round(accuracy.accuracy) : 0;
 
     // SVG ring maths: circumference of a circle with r=54
     // dashOffset controls how much of the ring is filled
@@ -39,7 +35,7 @@ export default function Accuracy() {
             <h1 className="mb-2 text-3xl font-bold text-foreground">Prediction Accuracy</h1>
             <p className="mb-10 text-sm text-muted-foreground">How well MatchMind predicts match outcomes.</p>
 
-            {hasPredictions ? (
+            {accuracy && hasPredictions ? (
                 <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
                     {/* Circular progress ring + progress bar */}
                     <div className="flex flex-col items-center rounded-2xl border border-border bg-card p-10 lg:w-72 shrink-0">
@@ -107,7 +103,7 @@ export default function Accuracy() {
                         <StatCard
                             icon={Target}
                             label="Accuracy Rate"
-                            value={typeof accuracy.accuracy === "string" ? accuracy.accuracy : `${pct}%`}
+                            value={`${pct}%`}
                             description="Percentage of predictions that were correct"
                             iconClass="text-primary"
                             highlight

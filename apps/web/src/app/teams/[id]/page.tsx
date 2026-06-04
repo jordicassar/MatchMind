@@ -12,22 +12,29 @@ import { cn } from "@/lib/utils";
 import PageWrapper from "@/components/layout/PageWrapper";
 import HistoryCard from "@/components/match/HistoryCard";
 import MatchCard from "@/components/match/MatchCard";
+import type { TeamProfile, Prediction } from "@/lib/types";
 
 export default function TeamDetail({ params }: { params: Promise<{ id: string }> }) {
-  const [team, setTeam] = useState<any>(null);
+  const [team, setTeam] = useState<TeamProfile | null>(null);
   const [activeTab, setActiveTab] = useState<"upcoming" | "history" | "squad">("upcoming");
   const [isLoading, setIsLoading] = useState<number | null>(null);
-  const [storePrediction, setStorePrediction] = useState<Record<number, any>>({});
+  const [storePrediction, setStorePrediction] = useState<Record<number, Prediction>>({});
   const { id } = use(params);
 
   useEffect(() => {
     fetch(`/api/teams/${id}`).then((r) => r.json()).then(setTeam);
   }, [id]);
 
-  if (!team) return null;
+  if (!team) return (
+      <PageWrapper>
+        <div className="flex justify-center py-24">
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
+      </PageWrapper>
+    );
 
-  const upcomingMatches = team.matches.filter((m: any) => m.homeScore === null);
-  const playedMatches   = team.matches.filter((m: any) => m.homeScore !== null);
+  const upcomingMatches = team.matches.filter((m) => m.homeScore === null);
+  const playedMatches   = team.matches.filter((m) => m.homeScore !== null);
   const teamId          = parseInt(id);
   const winRate         = team.stats.matchesPlayed > 0
     ? Math.round((team.stats.wins / team.stats.matchesPlayed) * 100)
@@ -50,8 +57,10 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ matchId }),
     });
-    const data = await res.json();
-    setStorePrediction((prev) => ({ ...prev, [matchId]: data }));
+    if (res.ok) {
+      const data = await res.json();
+      setStorePrediction((prev) => ({ ...prev, [matchId]: data }));
+    }
     setIsLoading(null);
   }
 
@@ -61,7 +70,7 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
       <section className="relative mb-10 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card via-card to-primary/5 p-8">
         <div className="pointer-events-none absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-primary/8 to-transparent" />
         <div className="relative z-10 flex items-center gap-6">
-          <img src={team.team.crest} alt={team.team.name} className="h-20 w-20 object-contain drop-shadow-lg" />
+          <img src={team.team.crest ?? undefined} alt={team.team.name} className="h-20 w-20 object-contain drop-shadow-lg" />
           <div>
             <h1 className="text-3xl font-extrabold text-foreground md:text-4xl">{team.team.name}</h1>
             <div className="mt-2 flex items-center gap-3">
@@ -106,7 +115,7 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
         ].map(({ key, label }) => (
           <button
             key={key}
-            onClick={() => setActiveTab(key as any)}
+            onClick={() => setActiveTab(key as "upcoming" | "history" | "squad")}
             className={cn(
               "flex-1 rounded-lg py-2 text-sm font-medium transition-colors",
               activeTab === key 
@@ -126,7 +135,7 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
           {upcomingMatches.length === 0 ? (
             <p className="text-sm text-muted-foreground">No upcoming matches.</p>
           ) : (
-            upcomingMatches.map((match: any) => (
+            upcomingMatches.map((match) => (
               <MatchCard
                 key={match.id}
                 match={match}
@@ -145,7 +154,7 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
           {playedMatches.length === 0 ? (
             <p className="text-sm text-muted-foreground">No matches played yet.</p>
           ) : (
-            playedMatches.map((match: any) => (
+            playedMatches.map((match) => (
               <HistoryCard key={match.id} match={match} teamId={teamId} />
             ))
           )}
@@ -156,15 +165,15 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
       {activeTab === "squad" && (
         <div>
           {["Goalkeeper", "Defender", "Midfielder", "Attacker"].map((pos) => {
-            const group = team.players.filter((p:any) => p.position === pos);
+            const group = team.players.filter((p) => p.position === pos);
             if (group.length === 0) return null;
             return (
               <div key={pos} className="mb-6">
                 <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">{pos}s</h3>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                  {group.map((p: any) => (
+                  {group.map((p) => (
                     <div key={p.id} className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
-                      {p.photo && <img src={p.photo} alt={p.name} className="h-10 w-10 rounded-full object-cover" />}
+                      {p.photo && <img src={p.photo} alt={p.name ?? undefined} className="h-10 w-10 rounded-full object-cover" />}
                       <div>
                         <p className="text-sm font-medium text-foreground">{p.name}</p>
                         <p className="text-[11px] text-muted-foreground">{p.nationality}</p>

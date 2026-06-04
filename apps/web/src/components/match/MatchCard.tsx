@@ -10,10 +10,11 @@ import { Loader2, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import TeamSlot from "./TeamSlot";
+import type { Match, Prediction } from "@/lib/types";
 
 interface Props {
-  match: any;
-  prediction?: any;
+  match: Match;
+  prediction?: Prediction | null;
   isLoading: boolean;
   onPredict: () => void;
 }

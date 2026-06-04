@@ -1,10 +1,29 @@
+// Match sync route — seeds the database from the API-Sports fixtures feed.
+// For each fixture it upserts both teams (by name) and then the match (by
+// externalId), so the route is safe to re-run: existing records are updated
+// with the latest crests and scores rather than duplicated.
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fetchMatches } from "@/lib/footballApi";
 
+// Minimal shape of the API-Sports fixtures response — only the fields used here.
+interface ApiSquadTeam {
+  id: number;
+  name: string;
+  logo: string;
+}
+interface ApiFixture {
+  fixture: { id: number; date: string };
+  teams: { home: ApiSquadTeam; away: ApiSquadTeam };
+  goals: { home: number | null; away: number | null };
+}
+interface FixturesResponse {
+  response: ApiFixture[];
+}
+
 export async function POST() {
   try {
-    const matchData = (await fetchMatches()) as any;
+    const matchData = (await fetchMatches()) as FixturesResponse;
 
     for (const match of matchData.response) {
       const homeTeam = await prisma.team.upsert({

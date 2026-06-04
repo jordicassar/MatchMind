@@ -8,14 +8,15 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import TeamSlot from "./TeamSlot";
+import type { Match } from "@/lib/types";
 
 type Result = "W" | "L" | "D";
 
-function getResult(match: any, teamId: number): Result | null {
+function getResult(match: Match, teamId: number): Result | null {
   if (match.homeScore === null) return null;
   const isHome   = match.homeTeamId === teamId;
-  const myScore  = isHome ? match.homeScore : match.awayScore;
-  const oppScore = isHome ? match.awayScore : match.homeScore;
+  const myScore  = (isHome ? match.homeScore : match.awayScore) ?? 0;
+  const oppScore = (isHome ? match.awayScore : match.homeScore) ?? 0;
   if (myScore > oppScore) return "W";
   if (myScore < oppScore) return "L";
   return "D";
@@ -36,7 +37,7 @@ const badgeStyle: Record<Result, string> = {
 const resultLabel: Record<Result, string> = { W: "Win", L: "Loss", D: "Draw" };
 
 interface Props {
-  match: any;
+  match: Match;
   teamId: number;
 }
 
