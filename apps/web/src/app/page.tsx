@@ -12,13 +12,15 @@ import { Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PageWrapper from "@/components/layout/PageWrapper";
 import MatchCard from "@/components/match/MatchCard";
+import type { Team, Match, Prediction } from "@/lib/types";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState<number | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
-  const [teams, setTeams] = useState<any[]>([]);
-  const [matches, setMatches] = useState<any[]>([]);
-  const [storePrediction, setStorePrediction] = useState<Record<number, any>>({});
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [storePrediction, setStorePrediction] = useState<Record<number, Prediction>>({});
+  const [statusFilter, setStatusFilter] = useState<"all" | "upcoming" | "played">("all");
 
   useEffect(() => {
     fetch("/api/teams").then((r) => r.json()).then(setTeams);
@@ -28,9 +30,19 @@ export default function Home() {
     fetch("/api/matches").then((r) => r.json()).then(setMatches);
   }, []);
 
-  const filteredMatches = selectedTeam
-    ? matches.filter((m) => m.homeTeamId === selectedTeam || m.awayTeamId === selectedTeam)
-    : matches;
+  const filteredMatches = matches 
+    .filter((m) => selectedTeam === null || m.homeTeamId === selectedTeam || m.awayTeamId === selectedTeam)
+    .filter((m) => {
+      if (statusFilter === "upcoming") return m.homeScore === null;
+      if (statusFilter === "played") return m.homeScore !== null;
+      return true;
+    }).sort((a, b) => {
+      const aUp = a.homeScore === null;
+      const bUp = b.homeScore === null;
+      if (aUp && !bUp) return -1;
+      if (!aUp && bUp) return 1;
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
 
   async function fetchPrediction(matchId: number) {
     setIsLoading(matchId);
@@ -39,8 +51,10 @@ export default function Home() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ matchId }),
     });
-    const data = await res.json();
-    setStorePrediction((prev) => ({ ...prev, [matchId]: data }));
+    if (res.ok) {
+      const data = await res.json();
+      setStorePrediction((prev) => ({ ...prev, [matchId]: data }));
+    }
     setIsLoading(null);
   }
 
@@ -82,7 +96,7 @@ export default function Home() {
             <Link href={`/teams/${team.id}`} key={team.id}>
               <div className="group flex flex-col items-center rounded-xl border border-border bg-card p-4 text-center transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5">
                 <img
-                  src={team.crest}
+                  src={team.crest ?? undefined}
                   alt={team.name}
                   className="mb-2 h-10 w-10 object-contain transition-transform group-hover:scale-110"
                 />
@@ -98,7 +112,15 @@ export default function Home() {
       {/* Matches */}
       <section>
         <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-2xl font-bold text-foreground">Matches</h2>
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold text-foreground">Matches</h2>
+            <div className="flex gap-1">
+              <FilterPill active={statusFilter === "all"}      onClick={() => setStatusFilter("all")}>All</FilterPill>
+              <FilterPill active={statusFilter === "upcoming"} onClick={() => setStatusFilter("upcoming")}>Upcoming</FilterPill>
+              <FilterPill active={statusFilter === "played"}   onClick={() => setStatusFilter("played")}>Played</FilterPill>
+            </div>
+          </div>
+
           <div className="flex flex-wrap gap-2">
             <FilterPill active={selectedTeam === null} onClick={() => setSelectedTeam(null)}>
               All
@@ -109,8 +131,8 @@ export default function Home() {
                 active={selectedTeam === team.id}
                 onClick={() => setSelectedTeam(selectedTeam === team.id ? null : team.id)}
               >
-                <img src={team.crest} alt={team.name} className="h-4 w-4 object-contain" />
-                {team.shortName ?? team.name.split(" ")[0]}
+                <img src={team.crest ?? undefined} alt={team.name} className="h-4 w-4 object-contain" />
+                {team.name.startsWith("Real ") ? team.name.slice(5) : team.name.split(" ")[0]}
               </FilterPill>
             ))}
           </div>

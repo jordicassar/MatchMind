@@ -1,12 +1,11 @@
+// Prediction breakdown route — explains how a match prediction is derived.
+// Returns the intermediate values behind a prediction: each team's recent
+// form (weighted average of goals), their head-to-head record and scores,
+// and which blend was used (form-only or 70% form + 30% H2H).
+// Read-only — unlike /api/predictions it never writes to the database.
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-
-function weightedAverage(values: number[]): number {
-    if (values.length === 0) return 0;
-    const n = values.length;
-    const total = values.reduce((sum, v, i) => sum + v * (n - i), 0);
-    return Math.round(total / ((n * ( n + 1)) / 2));
-}   
+import { weightedAverage } from "@/lib/predictions";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }>}){
     try{

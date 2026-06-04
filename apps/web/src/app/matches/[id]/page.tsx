@@ -1,3 +1,8 @@
+// Match detail page — the full view for a single match (/matches/[id]).
+// Fetches the match itself and, in parallel, its prediction breakdown.
+// Renders the teams and score, the AI prediction (with a correct/incorrect
+// marker on played matches), the form and H2H breakdown behind the
+// prediction, and a list of past head-to-head meetings.
 "use client";
 import { useEffect, useState, use } from "react";
 import { Calendar, Sparkles } from "lucide-react";
@@ -5,10 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import PageWrapper from "@/components/layout/PageWrapper";
 import TeamSlot from "@/components/match/TeamSlot";
+import type { Match, Breakdown } from "@/lib/types";
 
 export default function MatchDetail({ params }: { params: Promise<{ id: string }> }) {
-  const [match, setMatch] = useState<any>(null);
-  const [breakdown, setBreakdown] = useState<any>(null);
+  const [match, setMatch] = useState<Match | null>(null);
+  const [breakdown, setBreakdown] = useState<Breakdown | null>(null);
   const { id } = use(params);
 
   useEffect(() => {
@@ -16,7 +22,13 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
     fetch(`/api/matches/${id}/breakdown`).then((r) => r.json()).then(setBreakdown);
   }, [id]);
 
-  if (!match) return null;
+  if (!match) return (
+    <PageWrapper>
+      <div className="flex justify-center py-24">
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      </div>
+    </PageWrapper>
+  );
 
   const isUpcoming = match.homeScore === null;
   const date = new Date(match.date);
@@ -75,8 +87,8 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
                   (() => {
                     const predHome = match.prediction.predictedHome > match.prediction.predictedAway;
                     const predAway = match.prediction.predictedHome < match.prediction.predictedAway;
-                    const actualHome = match.homeScore > match.awayScore;
-                    const actualAway = match.homeScore < match.awayScore;
+                    const actualHome = (match.homeScore ?? 0) > (match.awayScore ?? 0);
+                    const actualAway = (match.homeScore ?? 0) < (match.awayScore ?? 0);
                     const correct = (predHome && actualHome) || (predAway && actualAway) || (!predHome && !predAway && match.homeScore === match.awayScore);
                     return correct ? "text-chart-1" : "text-chart-2";
                   })()
@@ -84,8 +96,8 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
                   {(() => {
                     const predHome = match.prediction.predictedHome > match.prediction.predictedAway;
                     const predAway = match.prediction.predictedHome < match.prediction.predictedAway;
-                    const actualHome = match.homeScore > match.awayScore;
-                    const actualAway = match.homeScore < match.awayScore;
+                    const actualHome = (match.homeScore ?? 0) > (match.awayScore ?? 0);
+                    const actualAway = (match.homeScore ?? 0) < (match.awayScore ?? 0);
                     return (predHome && actualHome) || (predAway && actualAway) || (!predHome && !predAway && match.homeScore === match.awayScore)
                       ? "Correct prediction"
                       : "Incorrect prediction";
@@ -168,7 +180,7 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
               {breakdown.h2hMatches?.length > 0 && (
                 <div className="space-y-2">
                   <p className="mb-3 text-[11px] uppercase tracking-wider text-muted-foreground">Past Meetings</p>
-                  {breakdown.h2hMatches.map((m: any) => (
+                  {breakdown.h2hMatches.map((m) => (
                     <div key={m.id} className="flex items-center justify-between rounded-lg border border-border bg-background px-4 py-2 text-sm">
                       <span className="w-1/3 truncate text-muted-foreground">{m.homeTeam}</span>
                       <div className="flex flex-col items-center">

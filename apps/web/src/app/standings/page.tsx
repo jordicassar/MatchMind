@@ -1,15 +1,23 @@
+// Standings page — renders the full La Liga table from /api/standings.
+// Each row shows played/won/drawn/lost, goals for/against, goal difference
+// and points, with team names linking to their detail page. The top four
+// rows get a green left border to mark the Champions League places.
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Trophy } from "lucide-react";
 import PageWrapper from "@/components/layout/PageWrapper";
 import { cn } from "@/lib/utils";
+import type { StandingsRow } from "@/lib/types";
 
 export default function StandingsPage() {
-  const [rows, setRows] = useState<any[]>([]);
+  const [rows, setRows] = useState<StandingsRow[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/standings").then((r) => r.json()).then(setRows);
+    fetch("/api/standings")
+      .then((r) => r.json())
+      .then((data => { setRows(data); setLoading(false); }));
   }, []);
 
   return (
@@ -68,9 +76,11 @@ export default function StandingsPage() {
         </table>
       </div>
 
-      {rows.length === 0 && (
+      {loading ? (
+        <p className="mt-8 text-center text-sm text-muted-foreground">Loading</p>
+      ) : rows.length == 0 ? (
         <p className="mt-8 text-center text-sm text-muted-foreground">No results yet.</p>
-      )}
+      ) : null}
     </PageWrapper>
   );
 }

@@ -1,3 +1,6 @@
+// Team collection routes — operations on the full set of teams.
+// GET returns all teams alphabetically; POST creates a new team by name.
+// For a single team's full profile and stats, see teams/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 

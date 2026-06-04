@@ -1,3 +1,8 @@
+// Standings route — computes the league table from played matches.
+// Iterates every match with a score, accumulating played/won/drawn/lost
+// and goals for/against per team in a Map keyed by team id, then derives
+// goal difference and points (3 per win, 1 per draw). Rows are sorted by
+// points, then goal difference, then goals scored, then name.
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 

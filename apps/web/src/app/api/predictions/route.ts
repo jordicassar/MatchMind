@@ -1,12 +1,12 @@
+// Predictions route — the source of truth for stored predictions.
+// GET returns all saved predictions with their match and team details.
+// POST generates a prediction for a single match: it blends each team's
+// recent form (70%) with their head-to-head record (30%), falling back to
+// form only when no H2H data exists, then upserts the result.
+// For a read-only explanation of a prediction, see matches/[id]/breakdown.
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-
-function weightedAverage(values: number[]): number {
-  if (values.length === 0) return 0;
-  const n = values.length;
-  const total = values.reduce((sum, v, i) => sum + v * (n - i), 0);
-  return Math.round(total / ((n * (n + 1)) / 2));
-}
+import { weightedAverage } from "@/lib/predictions";
 
 export async function GET() {
   try {
