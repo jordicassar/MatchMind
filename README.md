@@ -2,6 +2,8 @@
 
 AI-powered La Liga match prediction app. Uses historical match data and a weighted recency algorithm blended with head-to-head records to predict scorelines — and tracks how accurate those predictions actually are.
 
+**Live demo:** [matchmind-chi.vercel.app](https://matchmind-chi.vercel.app)
+
 ---
 
 ## Tech Stack
