@@ -8,8 +8,12 @@ export async function GET() {
   try {
     const teams = await prisma.team.findMany({ orderBy: { name: "asc" } });
     return NextResponse.json(teams);
-  } catch {
-    return NextResponse.json({ message: "Failed to fetch teams" }, { status: 500 });
+  } catch (error) {
+    console.error("GET /api/teams failed:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch teams", error: String(error) },
+      { status: 500 }
+    );
   }
 }
 
