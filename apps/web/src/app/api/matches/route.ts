@@ -14,8 +14,12 @@ export async function GET() {
       orderBy: { date: "desc" },
     });
     return NextResponse.json(matches);
-  } catch {
-    return NextResponse.json({ message: "Failed to fetch matches" }, { status: 500 });
+  } catch (error) {
+    console.error("GET /api/matches failed:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch matches", error: String(error) },
+      { status: 500 }
+    );
   }
 }
 
