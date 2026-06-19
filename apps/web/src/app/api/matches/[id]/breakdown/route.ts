@@ -1,89 +1,97 @@
-// Prediction breakdown route — explains how a match prediction is derived.
-// Returns the intermediate values behind a prediction: each team's recent
-// form (weighted average of goals), their head-to-head record and scores,
-// and which blend was used (form-only or 70% form + 30% H2H).
-// Read-only — unlike /api/predictions it never writes to the database.
+// Prediction breakdown route — explains a single match's prediction.
+// Recomputes the tuned model's inputs (leak-free) and returns the signals
+// behind the predicted score: attack/defense expected goals, home advantage,
+// and each team's points-per-game (strength). Also returns head-to-head
+// history for context only — the model no longer uses H2H.
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { weightedAverage } from "@/lib/predictions";
+import { predictScore } from "@/lib/predictions";
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }>}){
-    try{
-        const { id } = await params;
-        const match = await prisma.match.findUnique({ where: { id: parseInt(id) } });
-        if (!match) return NextResponse.json({ message: "Match not found"}, { status: 404 });
+const round1 = (n: number) => Math.round(n * 10) / 10;
 
-        const[homeMatches, awayMatches, h2hMatches] = await Promise.all([
-            prisma.match.findMany({
-                where: { homeTeamId: match.homeTeamId, homeScore: { not: null } },
-                orderBy: { date: "desc"},
-            }),
-            prisma.match.findMany({
-                where: { awayTeamId: match.awayTeamId, awayScore: { not: null } },
-                orderBy: { date: "desc"},
-            }),
-            prisma.match.findMany({
-                where: {
-                    homeScore: { not: null},
-                    OR: [
-                        { homeTeamId: match.homeTeamId, awayTeamId: match.awayTeamId },
-                        { homeTeamId: match.awayTeamId, awayTeamId: match.homeTeamId },
-                    ],
-                },
-                include: { homeTeam: true, awayTeam: true },
-                orderBy: { date: "desc"},
-            }),
-        ]);
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
+    const match = await prisma.match.findUnique({ where: { id: parseInt(id) } });
+    if (!match) return NextResponse.json({ message: "Match not found" }, { status: 404 });
 
-        const formHome = weightedAverage(homeMatches.map((m) => m.homeScore ?? 0));
-        const formAway = weightedAverage(awayMatches.map((m) => m.awayScore ?? 0));
-        
-        const h2hHomeScores = h2hMatches.map((m) =>
-        m.homeTeamId === match.homeTeamId ? (m.homeScore ?? 0) : (m.awayScore ?? 0)
-        );
-        const h2hAwayScores = h2hMatches.map((m) =>
-        m.awayTeamId === match.awayTeamId ? (m.awayScore ?? 0) : (m.homeScore ?? 0)
-        );
+    // Only matches played before this fixture — leak-free, same as the model.
+    const prior = { homeScore: { not: null }, awayScore: { not: null }, date: { lt: match.date } };
 
+    const [homeHomeGames, awayAwayGames, homeAllGames, awayAllGames, h2hMatches] = await Promise.all([
+      prisma.match.findMany({ where: { ...prior, homeTeamId: match.homeTeamId }, orderBy: { date: "desc" } }),
+      prisma.match.findMany({ where: { ...prior, awayTeamId: match.awayTeamId }, orderBy: { date: "desc" } }),
+      prisma.match.findMany({
+        where: { ...prior, OR: [{ homeTeamId: match.homeTeamId }, { awayTeamId: match.homeTeamId }] },
+        orderBy: { date: "desc" },
+      }),
+      prisma.match.findMany({
+        where: { ...prior, OR: [{ homeTeamId: match.awayTeamId }, { awayTeamId: match.awayTeamId }] },
+        orderBy: { date: "desc" },
+      }),
+      // Past meetings between the two teams (context only).
+      prisma.match.findMany({
+        where: {
+          homeScore: { not: null },
+          OR: [
+            { homeTeamId: match.homeTeamId, awayTeamId: match.awayTeamId },
+            { homeTeamId: match.awayTeamId, awayTeamId: match.homeTeamId },
+          ],
+        },
+        include: { homeTeam: true, awayTeam: true },
+        orderBy: { date: "desc" },
+      }),
+    ]);
 
-        const h2hHome = h2hMatches.length > 0 ? weightedAverage(h2hHomeScores) : null;
-        const h2hAway = h2hMatches.length > 0 ? weightedAverage(h2hAwayScores) : null;
+    const p = predictScore({
+      homeTeamId: match.homeTeamId,
+      awayTeamId: match.awayTeamId,
+      homeHomeGames,
+      awayAwayGames,
+      homeAllGames,
+      awayAllGames,
+    });
 
-        const h2hRecord = h2hMatches.reduce(
-            (acc, m) => {
-                const homeWon = m.homeTeamId === match.homeTeamId
-                    ? (m.homeScore ?? 0) > (m.awayScore ?? 0)
-                    : (m.awayScore ?? 0) > (m.homeScore ?? 0);
-                const draw = m.homeScore === m.awayScore;
-                if (draw) acc.draws++;
-                else if (homeWon) acc.homeWins++;
-                else acc.awayWins++;
-                return acc;
-            },
-            { homeWins: 0, draws: 0, awayWins: 0 }
-        );
+    // H2H record from the home team's perspective (context only).
+    const h2hRecord = h2hMatches.reduce(
+      (acc, m) => {
+        const homeWon =
+          m.homeTeamId === match.homeTeamId
+            ? (m.homeScore ?? 0) > (m.awayScore ?? 0)
+            : (m.awayScore ?? 0) > (m.homeScore ?? 0);
+        const draw = m.homeScore === m.awayScore;
+        if (draw) acc.draws++;
+        else if (homeWon) acc.homeWins++;
+        else acc.awayWins++;
+        return acc;
+      },
+      { homeWins: 0, draws: 0, awayWins: 0 }
+    );
 
-        return NextResponse.json({ 
-            formHome, 
-            formAway,
-            h2hHome,
-            h2hAway,
-            h2hCount: h2hMatches.length,
-            h2hRecord,
-            blendUsed: h2hMatches.length > 0 ? "form+h2h" : "form-only",
-            h2hMatches: h2hMatches.map((m) => ({
-                id: m.id,
-                date: m.date,
-                homeTeam: m.homeTeam.name,
-                awayTeam: m.awayTeam.name,
-                homeScore: m.homeScore,
-                awayScore: m.awayScore,
-            })),
-        });
-
-
-    } catch {
-        return NextResponse.json({ message: "Failed to compute breakdown"}, { status: 500 });
-        
-    }
+    return NextResponse.json({
+      predictedHome: p.predictedHome,
+      predictedAway: p.predictedAway,
+      homeAttack: round1(p.homeAttack),
+      homeDefense: round1(p.homeDefense),
+      awayAttack: round1(p.awayAttack),
+      awayDefense: round1(p.awayDefense),
+      expHome: round1((p.homeAttack + p.awayDefense) / 2),
+      expAway: round1((p.awayAttack + p.homeDefense) / 2),
+      homeAdvantage: p.homeAdvantage,
+      homePPG: round1(p.homePPG),
+      awayPPG: round1(p.awayPPG),
+      h2hCount: h2hMatches.length,
+      h2hRecord,
+      h2hMatches: h2hMatches.map((m) => ({
+        id: m.id,
+        date: m.date,
+        homeTeam: m.homeTeam.name,
+        awayTeam: m.awayTeam.name,
+        homeScore: m.homeScore,
+        awayScore: m.awayScore,
+      })),
+    });
+  } catch {
+    return NextResponse.json({ message: "Failed to compute breakdown" }, { status: 500 });
+  }
 }

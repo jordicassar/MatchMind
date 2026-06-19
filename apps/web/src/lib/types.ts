@@ -82,14 +82,22 @@ export interface H2HMatch {
 }
 
 // Prediction breakdown returned by /api/matches/[id]/breakdown.
+// Explains the tuned model: attack/defense expected goals, home advantage,
+// team strength (PPG), plus head-to-head history for context.
 export interface Breakdown {
-  formHome: number;
-  formAway: number;
-  h2hHome: number | null;
-  h2hAway: number | null;
+  predictedHome: number;
+  predictedAway: number;
+  homeAttack: number;
+  homeDefense: number;
+  awayAttack: number;
+  awayDefense: number;
+  expHome: number;
+  expAway: number;
+  homeAdvantage: number;
+  homePPG: number;
+  awayPPG: number;
   h2hCount: number;
   h2hRecord: H2HRecord;
-  blendUsed: string;
   h2hMatches: H2HMatch[];
 }
 
