@@ -10,10 +10,7 @@ export async function GET() {
     return NextResponse.json(teams);
   } catch (error) {
     console.error("GET /api/teams failed:", error);
-    return NextResponse.json(
-      { message: "Failed to fetch teams", error: String(error) },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Failed to fetch teams" }, { status: 500 });
   }
 }
 

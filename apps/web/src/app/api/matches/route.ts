@@ -16,10 +16,7 @@ export async function GET() {
     return NextResponse.json(matches);
   } catch (error) {
     console.error("GET /api/matches failed:", error);
-    return NextResponse.json(
-      { message: "Failed to fetch matches", error: String(error) },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Failed to fetch matches" }, { status: 500 });
   }
 }
 

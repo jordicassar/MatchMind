@@ -109,52 +109,53 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
 
           {breakdown && (
             <div className="mt-6 space-y-4">
-              {/* Form */}
+              {/* Expected goals: each team's attack vs the opponent's defense */}
               <div>
-                <p className="mb-2 text-[11px] uppercase tracking-wider text-muted-foreground">Home Form (avg goals at home)</p>
+                <p className="mb-2 text-[11px] uppercase tracking-wider text-muted-foreground">
+                  Expected Goals (attack vs opponent defense)
+                </p>
                 <div className="flex justify-between gap-3">
                   <div className="flex-1 rounded-lg border border-border bg-card p-3 text-center">
-                    <p className="text-xl font-bold text-foreground">{breakdown.formHome}</p>
+                    <p className="text-xl font-bold text-foreground">{breakdown.expHome}</p>
+                    <p className="text-[11px] text-muted-foreground">{match.homeTeam.name}</p>
+                    <p className="mt-1 text-[10px] text-muted-foreground">
+                      atk {breakdown.homeAttack} · vs def {breakdown.awayDefense}
+                    </p>
+                  </div>
+                  <div className="flex-1 rounded-lg border border-border bg-card p-3 text-center">
+                    <p className="text-xl font-bold text-foreground">{breakdown.expAway}</p>
+                    <p className="text-[11px] text-muted-foreground">{match.awayTeam.name}</p>
+                    <p className="mt-1 text-[10px] text-muted-foreground">
+                      atk {breakdown.awayAttack} · vs def {breakdown.homeDefense}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Team strength: points per game */}
+              <div>
+                <p className="mb-2 text-[11px] uppercase tracking-wider text-muted-foreground">
+                  Team Strength (points per game)
+                </p>
+                <div className="flex justify-between gap-3">
+                  <div className="flex-1 rounded-lg border border-border bg-card p-3 text-center">
+                    <p className="text-xl font-bold text-foreground">{breakdown.homePPG}</p>
                     <p className="text-[11px] text-muted-foreground">{match.homeTeam.name}</p>
                   </div>
                   <div className="flex-1 rounded-lg border border-border bg-card p-3 text-center">
-                    <p className="text-xl font-bold text-foreground">{breakdown.formAway}</p>
+                    <p className="text-xl font-bold text-foreground">{breakdown.awayPPG}</p>
                     <p className="text-[11px] text-muted-foreground">{match.awayTeam.name}</p>
                   </div>
                 </div>
               </div>
 
-              {/* H2H */}
-              <div>
-                <p className="mb-2 text-[11px] uppercase tracking-wider text-muted-foreground">
-                  Head-to-Head ({breakdown.h2hCount} matches)
-                </p>
-                {breakdown.h2hCount > 0 ? (
-                  <div className="flex justify-between gap-3">
-                    <div className="flex-1 rounded-lg border border-border bg-card p-3 text-center">
-                      <p className="text-xl font-bold text-chart-1">{breakdown.h2hRecord.homeWins}</p>
-                      <p className="text-[11px] text-muted-foreground">Home Wins</p>
-                    </div>
-                    <div className="flex-1 rounded-lg border border-border bg-card p-3 text-center">
-                      <p className="text-xl font-bold text-muted-foreground">{breakdown.h2hRecord.draws}</p>
-                      <p className="text-[11px] text-muted-foreground">Draws</p>
-                    </div>
-                    <div className="flex-1 rounded-lg border border-border bg-card p-3 text-center">
-                      <p className="text-xl font-bold text-chart-2">{breakdown.h2hRecord.awayWins}</p>
-                      <p className="text-[11px] text-muted-foreground">Away Wins</p>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">No H2H data available.</p>
-                )}
-              </div>
-
-              {/* Blend */}
+              {/* Model note */}
               <p className="text-center text-[11px] text-muted-foreground">
-                {breakdown.blendUsed === "form+h2h" ? "Weighted: 70% form · 30% H2H" : "Based on form only (no H2H data)"}
+                Expected goals + {breakdown.homeAdvantage} home advantage + team-strength adjustment
               </p>
             </div>
           )}
+
 
           {breakdown && breakdown.h2hCount > 0 && (
             <div className="mt-6 rounded-2xl border border-border bg-card p-6">
