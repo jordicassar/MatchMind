@@ -5,12 +5,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 // GET /api/matches
-// Returns all matches with their home and away team details included,
-// ordered most recent first.
+// Returns all matches with team details, most recent first. Predictions are not
+// included — the home page shows a "Get Prediction" button per card and fetches
+// a prediction on demand via POST /api/predictions.
 export async function GET() {
   try {
     const matches = await prisma.match.findMany({
-      include: { homeTeam: true, awayTeam: true, prediction: true },
+      include: { homeTeam: true, awayTeam: true },
       orderBy: { date: "desc" },
     });
     return NextResponse.json(matches);
