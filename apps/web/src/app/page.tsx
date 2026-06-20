@@ -143,7 +143,7 @@ export default function Home() {
             <MatchCard
               key={match.id}
               match={match}
-              prediction={storePrediction[match.id] ?? match.prediction}
+              prediction={storePrediction[match.id]}
               isLoading={isLoading === match.id}
               onPredict={() => fetchPrediction(match.id)}
             />

@@ -122,3 +122,18 @@ export function predictScore(input: {
     awayPPG,
   };
 }
+
+export function predictFromHistory(
+  match: { homeTeamId: number, awayTeamId: number, date: Date },
+  played: { homeTeamId: number, awayTeamId: number, homeScore: number | null; awayScore: number | null; date: Date}[]
+) {
+  const prior = played.filter((g) => g.date < match.date); // leak-free, still date-desc
+  return predictScore({
+    homeTeamId: match.homeTeamId,
+    awayTeamId: match.awayTeamId,
+    homeHomeGames: prior.filter((g) => g.homeTeamId === match.homeTeamId),
+    awayAwayGames: prior.filter((g) => g.awayTeamId === match.awayTeamId),
+    homeAllGames: prior.filter((g) => g.homeTeamId === match.homeTeamId || g.awayTeamId === match.homeTeamId),
+    awayAllGames: prior.filter((g) => g.homeTeamId === match.awayTeamId || g.awayTeamId === match.awayTeamId),
+  });
+}
