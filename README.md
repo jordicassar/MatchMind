@@ -53,7 +53,7 @@ The model was built iteratively and measured against a **leak-free backtest** �
 | + attack/defense + home advantage | 43.9% |
 | + team strength (points per game) | **46.8%** |
 
-For reference, a naive "always predict the home team" baseline scores ~45% in La Liga — so the tuned model genuinely beats it.
+For reference, a naive "always predict the home team" baseline scores ~45% in La Liga — so the tuned model beats it.
 
 ---
 
