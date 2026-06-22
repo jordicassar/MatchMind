@@ -19,12 +19,16 @@ export async function POST() {
 
       // Venue
       const teamRes = await fetch(`${API}/teams?id=${team.externalId}`, { headers });
-      const teamData = (await teamRes.json()) as any;
+      const teamData = (await teamRes.json()) as {
+        response?: { venue?: { name?: string; city?: string; capacity?: number; image?: string } }[];
+      };
       const venue = teamData.response?.[0]?.venue ?? {};
 
       // Coach (current manager)
       const coachRes = await fetch(`${API}/coachs?team=${team.externalId}`, { headers });
-      const coachData = (await coachRes.json()) as any;
+      const coachData = (await coachRes.json()) as {
+        response?: { name?: string; photo?: string }[];
+      };
       const coach = coachData.response?.[0] ?? {};
 
       await prisma.team.update({
