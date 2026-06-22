@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    # Dummy URL so `prisma generate` (postinstall) and `next build` have one.
+    # CI never connects to a database — it only lints, tests, and builds.
+    env:
+      DATABASE_URL: postgresql://user:password@localhost:5432/matchmind
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --workspace=apps/web
+
+      - name: Test
+        run: npm test --workspace=apps/web
+
+      - name: Build
+        run: npm run build --workspace=apps/web
