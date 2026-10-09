@@ -1,5 +1,7 @@
 # MatchMind
 
+[![CI](https://github.com/jordicassar/MatchMind/actions/workflows/ci.yml/badge.svg)](https://github.com/jordicassar/MatchMind/actions/workflows/ci.yml)
+
 AI-powered La Liga match prediction app. Predicts scorelines from a tuned, leak-free model (attack/defense, home advantage, team strength) and tracks how accurate those predictions actually are.
 
 **Live demo:** [matchmind-chi.vercel.app](https://matchmind-chi.vercel.app)
@@ -80,6 +82,21 @@ curl -X POST http://localhost:3000/api/sync/teams    # venue + manager (rate-lim
 ```
 
 Predictions and accuracy are computed on the fly from match history on each request — there's no prediction-generation step to run.
+
+---
+
+## CI/CD
+
+Every push to `main` and every pull request runs the [CI workflow](.github/workflows/ci.yml) on GitHub Actions:
+
+1. **Install** — `npm ci` on Node.js 20 (npm cache enabled)
+2. **Lint** — ESLint across `apps/web`
+3. **Test** — Vitest suite
+4. **Build** — production `next build`
+
+CI never touches a real database — a dummy `DATABASE_URL` is set so `prisma generate` and `next build` can run.
+
+Deployment is handled by Vercel: pull requests get preview deployments, and merges to `main` deploy to the [live demo](https://matchmind-chi.vercel.app).
 
 ---
 
