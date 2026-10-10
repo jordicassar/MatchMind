@@ -5,6 +5,7 @@
 // on their externalId.
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireSyncSecret } from "@/lib/auth";
 
 // Minimal shape of the API-Sports squads response — only the fields used here.
 interface ApiSquadPlayer {
@@ -18,7 +19,10 @@ interface SquadResponse {
   response: { players: ApiSquadPlayer[] }[];
 }
 
-export async function POST() {
+export async function POST(request: Request) {
+    const denied = requireSyncSecret(request);
+    if (denied) return denied;
+
     try {
        const teams = await prisma.team.findMany({
          where: { externalId: { not: null },

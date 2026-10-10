@@ -5,10 +5,14 @@
 // (the free tier is rate limited — hence the delay between teams).
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireSyncSecret } from "@/lib/auth";
 
 const API = "https://v3.football.api-sports.io";
 
-export async function POST() {
+export async function POST(request: Request) {
+  const denied = requireSyncSecret(request);
+  if (denied) return denied;
+
   try {
     const teams = await prisma.team.findMany({
       where: { externalId: { not: null }, stadium: null },

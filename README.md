@@ -73,12 +73,13 @@ cd apps/web && npx prisma migrate dev
 npm run dev
 ```
 
-Then, in another terminal, seed the data from API-Sports:
+Then, in another terminal, seed the data from API-Sports. The sync routes require the `CRON_SECRET` from `.env.local` (generate one with `openssl rand -hex 32`):
 
 ```bash
-curl -X POST http://localhost:3000/api/sync          # teams + fixtures
-curl -X POST http://localhost:3000/api/sync/players  # squads (rate-limited — re-run to finish)
-curl -X POST http://localhost:3000/api/sync/teams    # venue + manager (rate-limited — re-run to finish)
+export CRON_SECRET=<value from .env.local>
+curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/sync          # teams + fixtures
+curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/sync/players  # squads (rate-limited — re-run to finish)
+curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/sync/teams    # venue + manager (rate-limited — re-run to finish)
 ```
 
 Predictions and accuracy are computed on the fly from match history on each request — there's no prediction-generation step to run.
