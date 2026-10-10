@@ -1,4 +1,5 @@
-// auth — shared guard for admin-only API routes (the /api/sync family).
+// auth — shared guard for admin-only API routes (/api/sync and the
+// /api/predictions/tune backtests).
 // Callers must send "Authorization: Bearer <CRON_SECRET>". The comparison is
 // constant-time so the secret can't be guessed from response timing. If
 // CRON_SECRET isn't set, the route stays locked (it fails closed instead of open).

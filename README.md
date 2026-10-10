@@ -52,6 +52,12 @@ The model was built iteratively and measured against a **leak-free backtest** â€
 
 For reference, a naive "always predict the home team" baseline scores ~45% in La Liga â€” so the tuned model beats it.
 
+The tuning routes re-run the full backtest on every request, so like the sync routes they require the `CRON_SECRET`:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/predictions/tune-v3
+```
+
 ---
 
 ## Local Setup

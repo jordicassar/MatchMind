@@ -8,6 +8,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isPredictionCorrect } from "@/lib/predictions";
+import { requireSyncSecret } from "@/lib/auth";
 
 const HOME_ADV = 0.75; // fixed at v2's plateau host
 const STRENGTH_K = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]; // strength weight to sweep
@@ -44,7 +45,10 @@ function ppg(teamId: number, before: Date, played: PlayedMatch[]): number {
     return points / games.length;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+    const denied = requireSyncSecret(request);
+    if (denied) return denied;
+
     try {
         const played = (await prisma.match.findMany({
             where: { homeScore: { not: null}, awayScore: { not: null } },
