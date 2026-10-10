@@ -7,6 +7,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { weightedAverage, blendScore, isPredictionCorrect } from "@/lib/predictions";
+import { requireSyncSecret } from "@/lib/auth";
 
 const WEIGHTS = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
 
@@ -19,7 +20,10 @@ type PlayedMatch = {
     awayScore: number;
 };
 
-export async function GET() {
+export async function GET(request: Request) {
+    const denied = requireSyncSecret(request);
+    if (denied) return denied;
+
     try {
         // One query: every played match, most recent first (matches production ordering).
         const played = (await prisma.match.findMany({

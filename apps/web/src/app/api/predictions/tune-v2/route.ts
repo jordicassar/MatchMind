@@ -11,6 +11,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isPredictionCorrect } from "@/lib/predictions";
+import { requireSyncSecret } from "@/lib/auth";
 
 // Home-advantage values (goals) to sweep.
 const HOME_ADV = [0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5];
@@ -32,7 +33,10 @@ function wavg(values: number[]): number {
     return total / ((n * (n + 1)) / 2);
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+    const denied = requireSyncSecret(request);
+    if (denied) return denied;
+
     try {
         const played = (await prisma.match.findMany({
             where: { homeScore: { not: null }, awayScore: { not: null } },
