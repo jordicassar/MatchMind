@@ -2,16 +2,19 @@
 
 [![CI](https://github.com/jordicassar/MatchMind/actions/workflows/ci.yml/badge.svg)](https://github.com/jordicassar/MatchMind/actions/workflows/ci.yml)
 
-AI-powered La Liga match prediction app. Predicts scorelines from a tuned, leak-free model (attack/defense, home advantage, team strength) and tracks how accurate those predictions actually are.
+La Liga match prediction app. Predicts scorelines with a tuned, leak-free statistical model (attack/defense, home advantage, team strength) and tracks how accurate those predictions actually are.
 
 **Live demo:** [matchmind-chi.vercel.app](https://matchmind-chi.vercel.app)
+
+> **Data:** 2024/25 La Liga season via the API-Sports free tier.
 
 ---
 
 ## Tech Stack
 
-- **Framework:** Next.js 16 (App Router, API routes)
+- **Framework:** Next.js 16 + React 19 (App Router, API routes)
 - **Language:** TypeScript (full-stack)
+- **Runtime:** Node.js 24
 - **Database:** PostgreSQL (hosted on Neon) + Prisma ORM
 - **Styling:** Tailwind CSS + shadcn/ui
 - **Testing:** Vitest
@@ -22,7 +25,7 @@ AI-powered La Liga match prediction app. Predicts scorelines from a tuned, leak-
 
 ## Features
 
-- **Match predictions** — AI-generated scoreline predictions for every fixture from a tuned, leak-free model (attack/defense, home advantage, team strength)
+- **Match predictions** — scoreline predictions for every fixture from a tuned, leak-free statistical model (attack/defense, home advantage, team strength)
 - **Prediction accuracy tracker** — tracks correct vs incorrect predictions across all 380 played matches (~47% honest accuracy, beating the ~45% naive baseline)
 - **League standings** — full La Liga 2024/25 table computed from match results
 - **Team profiles** — stadium info, manager, upcoming fixtures, match history, and full squad by position
@@ -70,7 +73,7 @@ npm install
 
 # Set up environment variables
 cp .env.example apps/web/.env.local
-# Add your FOOTBALL_API_KEY and DATABASE_URL
+# Add your DATABASE_URL, FOOTBALL_API_KEY and CRON_SECRET
 
 # Run database migrations
 cd apps/web && npx prisma migrate dev
@@ -107,6 +110,15 @@ Deployment is handled by Vercel: pull requests get preview deployments, and merg
 
 ---
 
+## Security
+
+- **Admin routes are locked.** The data-sync routes (`/api/sync`, `/api/sync/*`) and model-tuning routes (`/api/predictions/tune*`) require `Authorization: Bearer $CRON_SECRET`, checked in constant time. If the secret isn't set, they stay locked.
+- **No public write routes.** Teams and matches are only written by the protected sync routes; the only public `POST` is on-demand prediction.
+- **Dependencies are monitored.** Dependabot opens weekly update PRs and security fixes; secret scanning with push protection blocks committed credentials.
+- **`main` is protected.** Changes land only through pull requests that pass CI.
+
+---
+
 ## Project Structure
 
 ```
@@ -118,3 +130,11 @@ apps/
       lib/              # Prisma client, prediction logic, football API wrapper
     prisma/             # Schema and migrations
 ```
+
+---
+
+## License
+
+[MIT](LICENSE)
+
+---
