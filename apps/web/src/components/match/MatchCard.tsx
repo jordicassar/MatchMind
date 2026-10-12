@@ -2,7 +2,7 @@
 // Displays a match with its status (Upcoming / Full Time), both team crests and names,
 // and the final score if the match has been played.
 // For upcoming matches, renders a prediction button that calls /api/predictions
-// and displays the AI-generated score once returned.
+// and displays the predicted score once returned.
 // For the team detail page match card with result colour coding, see HistoryCard.tsx.
 "use client";
 import Link from "next/link";
@@ -52,7 +52,7 @@ export default function MatchCard({ match, prediction, isLoading, onPredict }: P
           {prediction ? (
             <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-center">
               <p className="mb-0.5 flex items-center justify-center gap-1 text-[10px] uppercase tracking-wider text-primary/70">
-                <Sparkles className="h-3 w-3" /> AI Prediction
+                <Sparkles className="h-3 w-3" /> Model Prediction
               </p>
               <p className="text-base font-bold text-primary">
                 {prediction.predictedHome} – {prediction.predictedAway}
