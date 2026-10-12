@@ -16,7 +16,7 @@ AI-powered La Liga match prediction app. Predicts scorelines from a tuned, leak-
 - **Styling:** Tailwind CSS + shadcn/ui
 - **Testing:** Vitest
 - **Deployment:** Vercel
-- **Data:** API-Sports football API
+- **Data:** API-Sports football API (free-tier)
 
 ---
 
