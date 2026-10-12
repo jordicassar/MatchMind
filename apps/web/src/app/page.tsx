@@ -2,7 +2,7 @@
 // Fetches all teams and matches from the API on load and renders three sections:
 //   1. Hero banner — league label and high-level stats (teams, upcoming, played)
 //   2. Teams grid — clickable cards linking to each team's detail page
-//   3. Matches grid — filterable by team, with an AI prediction button on upcoming matches
+//   3. Matches grid — filterable by team, with a prediction button on upcoming matches
 // HeroStat and FilterPill are small single-use components kept inline here
 // since they are only relevant to this page.
 "use client";
@@ -72,11 +72,11 @@ export default function Home() {
             <span className="text-xs font-semibold uppercase tracking-widest text-primary">LaLiga 2024/25</span>
           </div>
           <h1 className="mb-3 text-4xl font-extrabold leading-tight tracking-tight text-foreground md:text-5xl">
-            AI-Powered<br />
+            Data-Driven<br />
             <span className="text-primary">Match Predictions</span>
           </h1>
           <p className="mb-10 max-w-md text-sm text-muted-foreground">
-            Intelligent predictions for upcoming fixtures powered by historical performance data.
+            Statistical predictions for upcoming fixtures, built from historical performance data.
           </p>
           <div className="flex items-center gap-8">
             <HeroStat value={teams.length}   label="Teams" />

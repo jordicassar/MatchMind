@@ -1,6 +1,6 @@
 // Match detail page — the full view for a single match (/matches/[id]).
 // Fetches the match itself and, in parallel, its prediction breakdown.
-// Renders the teams and score, the AI prediction (with a correct/incorrect
+// Renders the teams and score, the model prediction (with a correct/incorrect
 // marker on played matches), the form and H2H breakdown behind the
 // prediction, and a list of past head-to-head meetings.
 "use client";
@@ -76,7 +76,7 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
           {match.prediction && (
             <div className="mt-6 rounded-xl border border-primary/20 bg-primary/5 px-4 py-4 text-center">
               <p className="mb-1 flex items-center justify-center gap-1 text-[11px] uppercase tracking-wider text-primary/70">
-                <Sparkles className="h-3.5 w-3.5" /> AI Prediction
+                <Sparkles className="h-3.5 w-3.5" /> Model Prediction
               </p>
               <p className="text-2xl font-bold text-primary">
                 {match.prediction.predictedHome} – {match.prediction.predictedAway}
