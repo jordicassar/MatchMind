@@ -44,8 +44,5 @@ logs/
 *.db
 *.sqlite
 
-# Redis dump
-dump.rdb
-
 # Prisma
 prisma/migrations/

@@ -2,6 +2,9 @@
   "name": "match_mind",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -10,8 +13,5 @@
     "dev": "npm run dev --workspace=apps/web",
     "build": "npm run build --workspace=apps/web",
     "start": "npm run start --workspace=apps/web"
-  },
-  "devDependencies": {
-    "typescript": "^6.0.3"
   }
 }
