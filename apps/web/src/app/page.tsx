@@ -76,12 +76,16 @@ export default function Home() {
             <span className="text-primary">Match Predictions</span>
           </h1>
           <p className="mb-10 max-w-md text-sm text-muted-foreground">
-            Statistical predictions for upcoming fixtures, built from historical performance data.
+            Leak-free statistical predictions for every 2024/25 LaLiga match, scored against the real results.
           </p>
           <div className="flex items-center gap-8">
             <HeroStat value={teams.length}   label="Teams" />
-            <div className="h-8 w-px bg-border" />
-            <HeroStat value={upcomingCount}  label="Upcoming" />
+            {upcomingCount > 0 && (
+              <>
+                <div className="h-8 w-px bg-border" />
+                <HeroStat value={upcomingCount}  label="Upcoming" />
+              </>
+            )}
             <div className="h-8 w-px bg-border" />
             <HeroStat value={playedCount}    label="Played" />
           </div>
@@ -116,7 +120,9 @@ export default function Home() {
             <h2 className="text-2xl font-bold text-foreground">Matches</h2>
             <div className="flex gap-1">
               <FilterPill active={statusFilter === "all"}      onClick={() => setStatusFilter("all")}>All</FilterPill>
-              <FilterPill active={statusFilter === "upcoming"} onClick={() => setStatusFilter("upcoming")}>Upcoming</FilterPill>
+              {upcomingCount > 0 && (
+                <FilterPill active={statusFilter === "upcoming"} onClick={() => setStatusFilter("upcoming")}>Upcoming</FilterPill>
+              )}
               <FilterPill active={statusFilter === "played"}   onClick={() => setStatusFilter("played")}>Played</FilterPill>
             </div>
           </div>

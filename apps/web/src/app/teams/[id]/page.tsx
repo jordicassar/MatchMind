@@ -1,4 +1,3 @@
-
 // Team detail page — displays a full profile for a single team.
 // The team ID comes from the dynamic URL segment (/teams/[id]) and is used
 // to fetch that team's stats and match history from /api/teams/:id.
@@ -16,7 +15,7 @@ import type { TeamProfile, Prediction } from "@/lib/types";
 
 export default function TeamDetail({ params }: { params: Promise<{ id: string }> }) {
   const [team, setTeam] = useState<TeamProfile | null>(null);
-  const [activeTab, setActiveTab] = useState<"upcoming" | "history" | "squad">("upcoming");
+  const [activeTab, setActiveTab] = useState<"upcoming" | "history" | "squad">("history");
   const [isLoading, setIsLoading] = useState<number | null>(null);
   const [storePrediction, setStorePrediction] = useState<Record<number, Prediction>>({});
   const { id } = use(params);
@@ -48,7 +47,7 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
     { label: "Played",         value: team.stats.matchesPlayed, icon: BarChart3,    color: "text-muted-foreground" },
     { label: "Goals Scored",   value: team.stats.goalsScored,   icon: TrendingUp,   color: "text-chart-1" },
     { label: "Goals Conceded", value: team.stats.goalsConceded, icon: TrendingDown, color: "text-chart-2" },
-  ];
+  ].filter((tile) => tile.label !== "Upcoming" || upcomingMatches.length > 0);
 
   async function fetchPrediction(matchId: number) {
     setIsLoading(matchId);
@@ -96,7 +95,7 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
       </section>
 
       {/* Stat tiles */}
-      <div className="mb-12 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+      <div className={cn("mb-12 grid grid-cols-2 gap-3 sm:grid-cols-4", statTiles.length === 7 ? "lg:grid-cols-7" : "lg:grid-cols-6")}>
         {statTiles.map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="flex flex-col items-center rounded-xl border border-border bg-card p-4 text-center">
             <Icon className={cn("mb-2 h-5 w-5", color)} />
@@ -110,9 +109,11 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
       <div className="mb-6 flex gap-1 rounded-xl border border-border bg-card p-1">
         {[
           { key: "upcoming", label: "Upcoming Matches" },
-          { key: "history", label: "Past Matches"} ,
+          { key: "history", label: "Past Matches" },
           { key: "squad", label: "Squad" },
-        ].map(({ key, label }) => (
+        ]
+          .filter(({ key }) => key !== "upcoming" || upcomingMatches.length > 0)
+          .map(({ key, label }) => (
           <button
             key={key}
             onClick={() => setActiveTab(key as "upcoming" | "history" | "squad")}
