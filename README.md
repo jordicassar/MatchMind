@@ -62,7 +62,7 @@ curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/predictio
 
 ## Local Setup
 
-**Prerequisites:** Node.js 22, PostgreSQL
+**Prerequisites:** Node.js 24, PostgreSQL
 
 ```bash
 # Install dependencies
@@ -96,7 +96,7 @@ Predictions and accuracy are computed on the fly from match history on each requ
 
 Every push to `main` and every pull request runs the [CI workflow](.github/workflows/ci.yml) on GitHub Actions:
 
-1. **Install** — `npm ci` on Node.js 22, read from `engines` in `package.json` (npm cache enabled)
+1. **Install** — `npm ci` on Node.js 24, read from `engines` in `package.json` (npm cache enabled)
 2. **Lint** — ESLint across `apps/web`
 3. **Test** — Vitest suite
 4. **Build** — production `next build`
