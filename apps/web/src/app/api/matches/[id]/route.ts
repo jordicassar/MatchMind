@@ -7,7 +7,7 @@ import { predictFromHistory } from "@/lib/predictions";
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-
+    if (Number.isNaN(parseInt(id))) return NextResponse.json({ message: "Match not found" }, { status: 404 });
     const match = await prisma.match.findUnique({
       where: { id: Number(id) },
       include: { homeTeam: true, awayTeam: true },
