@@ -137,3 +137,21 @@ export function predictFromHistory(
     awayAllGames: prior.filter((g) => g.homeTeamId === match.awayTeamId || g.awayTeamId === match.awayTeamId),
   });
 }
+
+// Share of played matches whose predicted outcome (home win / draw / away win)
+// matched the real result. Each prediction is leak-free (predictFromHistory only
+// sees matches played before that fixture). Powers /api/predictions/accuracy.
+export function predictionAccuracy(
+  played: { homeTeamId: number; awayTeamId: number; homeScore: number | null; awayScore: number | null; date: Date }[]
+) {
+  const correctPredictions = played.reduce((sum, m) => {
+    const { predictedHome, predictedAway } = predictFromHistory(m, played);
+    return isPredictionCorrect(predictedHome, predictedAway, m.homeScore ?? 0, m.awayScore ?? 0)
+      ? sum + 1
+      : sum;
+  }, 0);
+
+  const accuracy = played.length > 0 ? (correctPredictions / played.length) * 100 : 0;
+
+  return { totalPredictions: played.length, correctPredictions, accuracy };
+}

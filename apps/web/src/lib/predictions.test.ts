@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { weightedAverage, outcome, isPredictionCorrect, blendScore, pointsPerGame, predictScore } from "./predictions";
+import { weightedAverage, outcome, isPredictionCorrect, blendScore, pointsPerGame, predictScore, predictFromHistory, predictionAccuracy } from "./predictions";
 
 describe("weightedAverage", () => {
   it("returns 0 for an empty list", () => {
@@ -113,5 +113,60 @@ describe("predictScore", () => {
       awayAllGames: [{ homeTeamId: 3, awayTeamId: 2, homeScore: 1, awayScore: 1 }],
     });
     expect(predictedHome).toBeGreaterThanOrEqual(predictedAway);
+  });
+});
+
+// Helper for the history-based tests below. Team ids: 1, 2, 3...
+const played = (homeTeamId: number, awayTeamId: number, homeScore: number, awayScore: number, date: string) => ({
+  homeTeamId, awayTeamId, homeScore, awayScore, date: new Date(date),
+});
+
+describe("predictFromHistory", () => {
+  const fixture = { homeTeamId: 1, awayTeamId: 2, date: new Date("2024-10-01") };
+
+  it("ignores the fixture's own result (leak-free)", () => {
+    const asHomeWin = predictFromHistory(fixture, [played(1, 2, 5, 0, "2024-10-01")]);
+    const asAwayWin = predictFromHistory(fixture, [played(1, 2, 0, 5, "2024-10-01")]);
+    expect(asHomeWin.predictedHome).toBe(asAwayWin.predictedHome);
+    expect(asHomeWin.predictedAway).toBe(asAwayWin.predictedAway);
+  });
+
+  it("ignores matches played after the fixture", () => {
+    const withoutFuture = predictFromHistory(fixture, []);
+    const withFuture = predictFromHistory(fixture, [played(1, 3, 6, 0, "2024-11-01")]);
+    expect(withFuture).toEqual(withoutFuture);
+  });
+
+  it("uses matches played before the fixture", () => {
+    const noHistory = predictFromHistory(fixture, []);
+    // Team 1 thrashed someone at home a month earlier
+    const withHistory = predictFromHistory(fixture, [played(1, 3, 4, 0, "2024-09-01")]);
+    expect(withHistory.predictedHome).toBeGreaterThan(noHistory.predictedHome);
+  });
+});
+
+describe("predictionAccuracy", () => {
+  it("returns zeros when no matches have been played", () => {
+    expect(predictionAccuracy([])).toEqual({ totalPredictions: 0, correctPredictions: 0, accuracy: 0 });
+  });
+
+  it("counts correct and incorrect outcome predictions", () => {
+    // With no prior history the model only has home advantage, so it predicts
+    // a home win for both. The first really is a home win; the second isn't.
+    const result = predictionAccuracy([
+      played(1, 2, 2, 0, "2024-08-15"),
+      played(3, 4, 0, 1, "2024-08-15"),
+    ]);
+    expect(result).toEqual({ totalPredictions: 2, correctPredictions: 1, accuracy: 50 });
+  });
+
+  it("always returns a percentage between 0 and 100", () => {
+    const { accuracy } = predictionAccuracy([
+      played(1, 2, 1, 0, "2024-08-15"),
+      played(2, 1, 2, 2, "2024-08-22"),
+      played(1, 2, 0, 3, "2024-08-29"),
+    ]);
+    expect(accuracy).toBeGreaterThanOrEqual(0);
+    expect(accuracy).toBeLessThanOrEqual(100);
   });
 });
