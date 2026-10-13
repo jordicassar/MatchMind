@@ -4,24 +4,22 @@
 // marker on played matches), the form and H2H breakdown behind the
 // prediction, and a list of past head-to-head meetings.
 "use client";
-import { useEffect, useState, use } from "react";
+import { use } from "react";
 import { Calendar, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import PageWrapper from "@/components/layout/PageWrapper";
 import TeamSlot from "@/components/match/TeamSlot";
 import type { Match, Breakdown } from "@/lib/types";
+import NotFound from "@/app/not-found";
+import { useApi } from "@/lib/useApi";
 
 export default function MatchDetail({ params }: { params: Promise<{ id: string }> }) {
-  const [match, setMatch] = useState<Match | null>(null);
-  const [breakdown, setBreakdown] = useState<Breakdown | null>(null);
   const { id } = use(params);
+  const { data: match, notFound } = useApi<Match>(`/api/matches/${id}`);
+  const { data: breakdown } = useApi<Breakdown>(`/api/matches/${id}/breakdown`);
 
-  useEffect(() => {
-    fetch(`/api/matches/${id}`).then((r) => r.json()).then(setMatch);
-    fetch(`/api/matches/${id}/breakdown`).then((r) => r.json()).then(setBreakdown);
-  }, [id]);
-
+  if (notFound) return <NotFound />;
   if (!match) return (
     <PageWrapper>
       <div className="flex justify-center py-24">

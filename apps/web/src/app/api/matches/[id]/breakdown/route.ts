@@ -12,6 +12,8 @@ const round1 = (n: number) => Math.round(n * 10) / 10;
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    if (Number.isNaN(parseInt(id))) return NextResponse.json({ message: "Match not found" }, { status: 404 });
+
     const match = await prisma.match.findUnique({ where: { id: parseInt(id) } });
     if (!match) return NextResponse.json({ message: "Match not found" }, { status: 404 });
 

@@ -9,6 +9,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   try {
     const { id: rawId } = await params;
     const id = parseInt(rawId);
+    if (Number.isNaN(id)) return NextResponse.json({ message: "Team not found" }, { status: 404 });
+
 
     const team = await prisma.team.findUnique({ where: { id } });
     if (!team) return NextResponse.json({ message: "Team not found" }, { status: 404 });

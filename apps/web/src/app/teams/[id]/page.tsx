@@ -4,7 +4,7 @@
 // Renders a hero header, seven stat tiles, an upcoming matches section,
 // and a colour-coded match history (green = win, red = loss, amber = draw).
 "use client";
-import { useEffect, useState, use } from "react";
+import { useState, use } from "react";
 import { Trophy, XCircle, Minus, Calendar, BarChart3, TrendingUp, TrendingDown, User, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -12,18 +12,17 @@ import PageWrapper from "@/components/layout/PageWrapper";
 import HistoryCard from "@/components/match/HistoryCard";
 import MatchCard from "@/components/match/MatchCard";
 import type { TeamProfile, Prediction } from "@/lib/types";
+import NotFound from "@/app/not-found";
+import { useApi } from "@/lib/useApi";
 
 export default function TeamDetail({ params }: { params: Promise<{ id: string }> }) {
-  const [team, setTeam] = useState<TeamProfile | null>(null);
   const [activeTab, setActiveTab] = useState<"upcoming" | "history" | "squad">("history");
   const [isLoading, setIsLoading] = useState<number | null>(null);
   const [storePrediction, setStorePrediction] = useState<Record<number, Prediction>>({});
   const { id } = use(params);
+  const { data: team, notFound } = useApi<TeamProfile>(`/api/teams/${id}`);
 
-  useEffect(() => {
-    fetch(`/api/teams/${id}`).then((r) => r.json()).then(setTeam);
-  }, [id]);
-
+  if (notFound) return <NotFound />;
   if (!team) return (
       <PageWrapper>
         <div className="flex justify-center py-24">
