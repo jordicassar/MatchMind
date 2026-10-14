@@ -12,6 +12,10 @@ updates:
       minor-and-patch:
         update-types: ["minor", "patch"]
 
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+
   # Versions of actions used in .github/workflows/ci.yml
   - package-ecosystem: "github-actions"
     directory: "/"
