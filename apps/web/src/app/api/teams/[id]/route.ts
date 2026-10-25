@@ -1,16 +1,16 @@
 // Single team route — builds the full profile shown on the team detail page.
-// Fetches the team, all of its matches (home and away, most recent first),
-// and its squad, then derives season stats (wins/draws/losses, goals scored
-// and conceded) from the played matches.
+// Fetches the team, its current-season matches (home and away, most recent
+// first) and its squad, then derives season stats (wins/draws/losses, goals
+// scored and conceded) from the played matches.
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { CURRENT_SEASON } from "@/lib/season";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: rawId } = await params;
     const id = parseInt(rawId);
     if (Number.isNaN(id)) return NextResponse.json({ message: "Team not found" }, { status: 404 });
-
 
     const team = await prisma.team.findUnique({ where: { id } });
     if (!team) return NextResponse.json({ message: "Team not found" }, { status: 404 });
@@ -19,10 +19,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       prisma.match.findMany({
         include: { homeTeam: true, awayTeam: true },
         orderBy: { date: "desc" },
-        where: { OR: [{ homeTeamId: id }, { awayTeamId: id }] },
+        where: { season: CURRENT_SEASON, OR: [{ homeTeamId: id }, { awayTeamId: id }] },
       }),
-      prisma.match.findMany({ where: { homeTeamId: id, homeScore: { not: null } } }),
-      prisma.match.findMany({ where: { awayTeamId: id, awayScore: { not: null } } }),
+      prisma.match.findMany({ where: { season: CURRENT_SEASON, homeTeamId: id, homeScore: { not: null } } }),
+      prisma.match.findMany({ where: { season: CURRENT_SEASON, awayTeamId: id, awayScore: { not: null } } }),
+
       prisma.player.findMany({ where: { teamId: id}, orderBy: { name: "asc" }, 
       }),
     ]);
