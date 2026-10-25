@@ -14,6 +14,7 @@ import MatchCard from "@/components/match/MatchCard";
 import type { TeamProfile, Prediction } from "@/lib/types";
 import NotFound from "@/app/not-found";
 import { useApi } from "@/lib/useApi";
+import { CURRENT_SEASON, seasonLabel } from "@/lib/season";
 
 export default function TeamDetail({ params }: { params: Promise<{ id: string }> }) {
   const [activeTab, setActiveTab] = useState<"upcoming" | "history" | "squad">("history");
@@ -73,7 +74,7 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
             <h1 className="text-3xl font-extrabold text-foreground md:text-4xl">{team.team.name}</h1>
             <div className="mt-2 flex items-center gap-3">
               <Badge className="border-primary/20 bg-primary/10 text-primary hover:bg-primary/10">
-                LaLiga 2024/25
+                LaLiga {seasonLabel(CURRENT_SEASON)}
               </Badge>
               <span className="text-sm text-muted-foreground">{winRate}% win rate</span>
             </div>

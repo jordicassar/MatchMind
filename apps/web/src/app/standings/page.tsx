@@ -9,6 +9,7 @@ import { Trophy } from "lucide-react";
 import PageWrapper from "@/components/layout/PageWrapper";
 import { cn } from "@/lib/utils";
 import type { StandingsRow } from "@/lib/types";
+import { CURRENT_SEASON, seasonLabel } from "@/lib/season";
 
 export default function StandingsPage() {
   const [rows, setRows] = useState<StandingsRow[]>([]);
@@ -25,7 +26,7 @@ export default function StandingsPage() {
       <div className="mb-8 flex items-center gap-3">
         <Trophy className="h-6 w-6 text-primary" />
         <h1 className="text-3xl font-extrabold text-foreground">Standings</h1>
-        <span className="ml-auto text-xs font-semibold uppercase tracking-widest text-primary">LaLiga 2024/25</span>
+        <span className="ml-auto text-xs font-semibold uppercase tracking-widest text-primary">LaLiga {seasonLabel(CURRENT_SEASON)}</span>
       </div>
 
       <div className="overflow-x-auto rounded-2xl border border-border bg-card">
