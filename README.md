@@ -6,7 +6,7 @@ La Liga match prediction app. Predicts scorelines with a tuned, leak-free statis
 
 **Live demo:** [matchmind-chi.vercel.app](https://matchmind-chi.vercel.app)
 
-> **Data:** 2024/25 La Liga season via the API-Sports free tier.
+> **Data:** the current La Liga season, synced from football-data.org, plus the full 2024/25 season kept as model history and backtest. See [Data Sources](#data-sources).
 
 ---
 
@@ -19,16 +19,16 @@ La Liga match prediction app. Predicts scorelines with a tuned, leak-free statis
 - **Styling:** Tailwind CSS + shadcn/ui
 - **Testing:** Vitest
 - **Deployment:** Vercel
-- **Data:** API-Sports football API (free-tier)
+- **Data:** football-data.org (fixtures and results) + API-Sports (teams, stadiums, squads), both free tier
 
 ---
 
 ## Features
 
-- **Match predictions** — scoreline predictions for every fixture from a tuned, leak-free statistical model (attack/defense, home advantage, team strength)
-- **Prediction accuracy tracker** — tracks correct vs incorrect predictions across all 380 played matches (~47% honest accuracy, beating the ~45% naive baseline)
-- **League standings** — full La Liga 2024/25 table computed from match results
-- **Team profiles** — stadium info, manager, upcoming fixtures, match history, and full squad by position
+- **Match predictions** — scoreline predictions for every current-season fixture from a tuned, leak-free statistical model (attack/defense, home advantage, team strength)
+- **Prediction accuracy tracker** — scores this season's predictions against real results as matches are played, alongside the 2024/25 leak-free backtest (46.8%, beating the ~45% naive baseline)
+- **League standings** — the live La Liga table for the current season, computed from match results
+- **Team profiles** — stadium info, manager, upcoming fixtures, match history, and squad by position
 - **Match detail** — score, plus a prediction breakdown showing expected goals (attack vs defense), home advantage, and team strength (points per game)
 - **Head-to-head history** — past meetings between any two teams with results
 - **Match filtering** — filter by team or status (upcoming / played)
@@ -43,9 +43,11 @@ Each fixture's scoreline is predicted from three signals, all computed **leak-fr
 - **Home advantage** — a fixed nudge to the home side.
 - **Team strength** — the gap in points-per-game pulls the score toward the stronger team, so a strong away side can override home advantage.
 
+Predictions draw on every earlier match in the database, so current-season predictions also learn from 2024/25 — useful early in a season, and for promoted clubs with little recent history.
+
 ### How it was tuned
 
-The model was built iteratively and measured against a **leak-free backtest** — each parameter was swept over a range and scored by outcome accuracy across 380 played matches (`/api/predictions/tune`, `tune-v2`, `tune-v3`). An early version looked like it scored 51%, but that was inflated by **data leakage** — each match's own result was leaking into its prediction inputs. Fixing the leak revealed the honest baseline and the real gains:
+The model was built iteratively and measured against a **leak-free backtest** — each parameter was swept over a range and scored by outcome accuracy across the 380 matches of the 2024/25 season (`/api/predictions/tune`, `tune-v2`, `tune-v3`). An early version looked like it scored 51%, but that was inflated by **data leakage** — each match's own result was leaking into its prediction inputs. Fixing the leak revealed the honest baseline and the real gains:
 
 | Stage | Honest accuracy |
 |---|:-:|
@@ -63,6 +65,22 @@ curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/predictio
 
 ---
 
+## Data Sources
+
+MatchMind combines two free football APIs, because neither free tier covers everything on its own:
+
+| Data | Source | Why |
+|---|---|---|
+| Current-season fixtures and results | [football-data.org](https://www.football-data.org) | Its free tier includes the current La Liga season; a whole season is one request |
+| Stadiums, managers, current squads with photos | [API-Sports](https://www.api-football.com) | Richer team and player detail; these endpoints aren't season-restricted |
+| 2024/25 results (model history and backtest) | API-Sports | Its free tier only serves fixtures for the 2022–2024 seasons, so the current season comes from football-data instead |
+
+Clubs are linked across the two APIs by stored IDs (`externalId` for API-Sports, `fdId` for football-data), so a team's stadium, squad and matches belong to one record. Every match carries a `season`, and the site shows only the current one (worked out from the date in `lib/season.ts`); relegated clubs stay in the database as history but aren't shown.
+
+**Free-tier limits:** API-Sports allows 100 requests a day, so squad and stadium syncs are spread across runs; football-data allows 10 requests a minute.
+
+---
+
 ## Local Setup
 
 **Prerequisites:** Node.js 24, PostgreSQL
@@ -73,23 +91,26 @@ npm install
 
 # Set up environment variables
 cp .env.example apps/web/.env.local
-# Add your DATABASE_URL, FOOTBALL_API_KEY and CRON_SECRET
+# Add your DATABASE_URL, FOOTBALL_API_KEY, FOOTBALL_DATA_API_KEY and CRON_SECRET
 
-# Run database migrations
-cd apps/web && npx prisma migrate dev
+# Run database migrations and generate the Prisma client
+cd apps/web && npx prisma migrate dev && npx prisma generate
 
 # Start the dev server (from the project root)
 npm run dev
 ```
 
-Then, in another terminal, seed the data from API-Sports. The sync routes require the `CRON_SECRET` from `.env.local` (generate one with `openssl rand -hex 32`):
+Then, in another terminal, seed the data. The sync routes require the `CRON_SECRET` from `.env.local` (generate one with `openssl rand -hex 32`):
 
 ```bash
-export CRON_SECRET=<value from .env.local>
-curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/sync          # teams + fixtures
-curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/sync/players  # squads (rate-limited — re-run to finish)
-curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/sync/teams    # venue + manager (rate-limited — re-run to finish)
+set -a && source apps/web/.env.local && set +a
+curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/sync           # 2024/25 teams + results (API-Sports)
+curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/sync/fixtures  # current-season fixtures + results (football-data)
+curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/sync/players   # squads (rate-limited — re-run to finish)
+curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/sync/teams     # venue + manager (rate-limited — re-run to finish)
 ```
+
+The `live_season_data` migration links the current season's clubs to football-data, so run the migrations before `/api/sync/fixtures`. Re-run `/api/sync/fixtures` to pick up new results and rescheduled matches.
 
 Predictions and accuracy are computed on the fly from match history on each request — there's no prediction-generation step to run.
 
@@ -127,7 +148,7 @@ apps/
     src/
       app/              # Next.js pages and API routes
       components/       # Reusable UI components
-      lib/              # Prisma client, prediction logic, football API wrapper
+      lib/              # Prisma client, prediction model, season logic, football API wrappers
     prisma/             # Schema and migrations
 ```
 
@@ -136,5 +157,3 @@ apps/
 ## License
 
 [MIT](LICENSE)
-
----

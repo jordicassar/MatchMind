@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import PageWrapper from "@/components/layout/PageWrapper";
 import MatchCard from "@/components/match/MatchCard";
 import type { Team, Match, Prediction } from "@/lib/types";
+import { CURRENT_SEASON, seasonLabel } from "@/lib/season";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState<number | null>(null);
@@ -69,14 +70,14 @@ export default function Home() {
         <div className="relative z-10">
           <div className="mb-4 flex items-center gap-2">
             <Trophy className="h-4 w-4 text-primary" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-primary">LaLiga 2024/25</span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-primary">LaLiga {seasonLabel(CURRENT_SEASON)}</span>
           </div>
           <h1 className="mb-3 text-4xl font-extrabold leading-tight tracking-tight text-foreground md:text-5xl">
             Data-Driven<br />
             <span className="text-primary">Match Predictions</span>
           </h1>
           <p className="mb-10 max-w-md text-sm text-muted-foreground">
-            Leak-free statistical predictions for every 2024/25 LaLiga match, scored against the real results.
+            Leak-free statistical predictions for every {seasonLabel(CURRENT_SEASON)} LaLiga match, scored against the real results.
           </p>
           <div className="flex items-center gap-8">
             <HeroStat value={teams.length}   label="Teams" />
