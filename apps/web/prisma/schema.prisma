@@ -9,7 +9,8 @@ datasource db {
 
 model Team {
   id        Int      @id @default(autoincrement())
-  externalId Int?
+  externalId Int?    @unique
+  fdId Int?          @unique
   name      String   @unique
   createdAt DateTime @default(now())
 
@@ -28,6 +29,8 @@ model Team {
 model Match {
   id          Int      @id @default(autoincrement())
   externalId  Int?     @unique
+  fdId Int?   @unique
+  season      Int
   date        DateTime
   homeScore   Int?
   awayScore   Int?

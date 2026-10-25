@@ -45,6 +45,7 @@ export async function POST(request: Request) {
         update: { homeScore: match.goals.home, awayScore: match.goals.away},
         create: {
           externalId: match.fixture.id,
+          season: 2024,
           homeTeamId: homeTeam.id,
           awayTeamId: awayTeam.id,
           date: new Date(match.fixture.date),
