@@ -6,12 +6,6 @@
 // These functions run server-side only — never called from the browser.
 const API = "https://api.football-data.org/v4";
 
-// The season shown on the site, by its starting year (2026 = 2026/27).
-// La Liga starts in mid-August, so from July onwards the new season is current;
-// January–June still belong to the season that started the previous year.
-const now = new Date();
-export const CURRENT_SEASON = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
-
 // Minimal shape of a football-data match — only the fields MatchMind uses.
 export interface FdMatch {
   id: number;

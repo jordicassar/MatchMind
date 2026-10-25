@@ -7,7 +7,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireSyncSecret } from "@/lib/auth";
-import { fetchSeasonMatches, finalScore, CURRENT_SEASON } from "@/lib/footballDataApi";
+import { fetchSeasonMatches, finalScore } from "@/lib/footballDataApi";
+import { CURRENT_SEASON } from "@/lib/season";
 
 export async function POST(request: Request) {
   const denied = requireSyncSecret(request);
