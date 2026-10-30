@@ -33,7 +33,12 @@ export default function Accuracy() {
     return (
         <PageWrapper>
             <h1 className="mb-2 text-3xl font-bold text-foreground">Prediction Accuracy</h1>
-            <p className="mb-10 text-sm text-muted-foreground">How well MatchMind predicts match outcomes.</p>
+            <p className="mb-10 text-sm text-muted-foreground">
+                How well MatchMind predicts {accuracy?.season ?? "this season's"} match outcomes.
+                {accuracy?.backtest && accuracy.backtest.totalPredictions > 0 && (
+                    <> Backtested on {accuracy.backtest.season}: {Math.round(accuracy.backtest.accuracy * 10) / 10}% ({accuracy.backtest.correctPredictions} of {accuracy.backtest.totalPredictions}).</>
+                )}
+            </p>
 
             {accuracy && hasPredictions ? (
                 <div className="flex flex-col gap-8 lg:flex-row lg:items-start">

@@ -119,4 +119,6 @@ export interface Accuracy {
   totalPredictions: number;
   correctPredictions: number;
   accuracy: number;
+  season: string;
+  backtest: { season: string; totalPredictions: number; correctPredictions: number; accuracy: number };
 }
