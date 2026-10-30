@@ -129,6 +129,8 @@ CI never touches a real database — a dummy `DATABASE_URL` is set so `prisma ge
 
 Deployment is handled by Vercel: pull requests get preview deployments, and merges to `main` deploy to the [live demo](https://matchmind-chi.vercel.app).
 
+A [Vercel Cron job](apps/web/vercel.json) calls `/api/sync/fixtures` every night at 05:00 UTC, so new results and rescheduled matches are picked up automatically. Vercel sends the `CRON_SECRET` with each call, so the route stays protected.
+
 ---
 
 ## Security
