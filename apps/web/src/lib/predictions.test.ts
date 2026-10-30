@@ -169,4 +169,12 @@ describe("predictionAccuracy", () => {
     expect(accuracy).toBeGreaterThanOrEqual(0);
     expect(accuracy).toBeLessThanOrEqual(100);
   });
+
+  it("scores only given matches but learns from the full history", () => {
+    const earlier = played(3, 2, 0, 4, "2024-09-01");
+    const scored = played(1, 2, 0, 1, "2024-10-01");
+
+    expect(predictionAccuracy([scored])).toEqual({ totalPredictions: 1, correctPredictions: 0, accuracy: 0});
+    expect(predictionAccuracy([scored], [scored, earlier])).toEqual({ totalPredictions: 1, correctPredictions: 1, accuracy: 100 });
+  });
 });

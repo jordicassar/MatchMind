@@ -142,10 +142,11 @@ export function predictFromHistory(
 // matched the real result. Each prediction is leak-free (predictFromHistory only
 // sees matches played before that fixture). Powers /api/predictions/accuracy.
 export function predictionAccuracy(
-  played: { homeTeamId: number; awayTeamId: number; homeScore: number | null; awayScore: number | null; date: Date }[]
+  played: { homeTeamId: number; awayTeamId: number; homeScore: number | null; awayScore: number | null; date: Date }[],
+  history: typeof played = played
 ) {
   const correctPredictions = played.reduce((sum, m) => {
-    const { predictedHome, predictedAway } = predictFromHistory(m, played);
+    const { predictedHome, predictedAway } = predictFromHistory(m, history);
     return isPredictionCorrect(predictedHome, predictedAway, m.homeScore ?? 0, m.awayScore ?? 0)
       ? sum + 1
       : sum;
