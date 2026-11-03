@@ -17,7 +17,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
         <p className="text-sm font-semibold uppercase tracking-widest text-chart-2">Error</p>
         <h1 className="mt-2 text-3xl font-extrabold text-foreground">Something went wrong</h1>
         <p className="mt-3 max-w-sm text-sm text-muted-foreground">
-          We couldn&apos;t load this page. It may be a temporary problem — try again in a moment.
+          We couldn&apos;t load this page. It may be a temporary problem. Try again in a moment.
         </p>
         <div className="mt-8 flex gap-3">
           <button
