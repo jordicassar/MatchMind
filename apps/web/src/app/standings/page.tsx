@@ -10,6 +10,7 @@ import PageWrapper from "@/components/layout/PageWrapper";
 import { cn } from "@/lib/utils";
 import type { StandingsRow } from "@/lib/types";
 import { CURRENT_SEASON, seasonLabel } from "@/lib/season";
+import Image from "next/image";
 
 export default function StandingsPage() {
   const [rows, setRows] = useState<StandingsRow[]>([]);
@@ -57,7 +58,7 @@ export default function StandingsPage() {
                 <td className="py-3 pl-4 pr-2 text-center text-muted-foreground">{i + 1}</td>
                 <td className="py-3 px-2">
                   <Link href={`/teams/${row.team.id}`} className="flex items-center gap-2 hover:text-primary transition-colors">
-                    {row.team.crest && <img src={row.team.crest} alt={row.team.name} className="h-6 w-6 object-contain" />}
+                    {row.team.crest && <Image src={row.team.crest} alt={row.team.name} width={24} height={24} className="h-6 w-6 object-contain" />}
                     <span className="font-medium text-foreground">{row.team.name}</span>
                   </Link>
                 </td>

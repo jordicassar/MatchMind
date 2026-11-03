@@ -5,6 +5,7 @@
 // and a colour-coded match history (green = win, red = loss, amber = draw).
 "use client";
 import { useState, use } from "react";
+import Image from "next/image";
 import { Trophy, XCircle, Minus, Calendar, BarChart3, TrendingUp, TrendingDown, User, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -69,7 +70,9 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
       <section className="relative mb-10 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card via-card to-primary/5 p-8">
         <div className="pointer-events-none absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-primary/8 to-transparent" />
         <div className="relative z-10 flex items-center gap-6">
-          <img src={team.team.crest ?? undefined} alt={team.team.name} className="h-20 w-20 object-contain drop-shadow-lg" />
+          {team.team.crest && (
+            <Image src={team.team.crest} alt={team.team.name} width={80} height={80} priority className="h-20 w-20 object-contain drop-shadow-lg" />
+          )}
           <div>
             <h1 className="text-3xl font-extrabold text-foreground md:text-4xl">{team.team.name}</h1>
             <div className="mt-2 flex items-center gap-3">
@@ -174,7 +177,7 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                   {group.map((p) => (
                     <div key={p.id} className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
-                      {p.photo && <img src={p.photo} alt={p.name ?? undefined} className="h-10 w-10 rounded-full object-cover" />}
+                      {p.photo && <Image src={p.photo} alt={p.name ?? ""} width={40} height={40} className="h-10 w-10 rounded-full object-cover" />}
                       <div>
                         <p className="text-sm font-medium text-foreground">{p.name}</p>
                         <p className="text-[11px] text-muted-foreground">{p.nationality}</p>
