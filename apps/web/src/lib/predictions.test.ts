@@ -147,7 +147,9 @@ describe("predictFromHistory", () => {
 
 describe("predictionAccuracy", () => {
   it("returns zeros when no matches have been played", () => {
-    expect(predictionAccuracy([])).toEqual({ totalPredictions: 0, correctPredictions: 0, accuracy: 0 });
+    expect(predictionAccuracy([])).toEqual({
+      totalPredictions: 0, correctPredictions: 0, accuracy: 0, exactScores: 0, exactScoreAccuracy: 0,
+    });
   });
 
   it("counts correct and incorrect outcome predictions", () => {
@@ -157,7 +159,21 @@ describe("predictionAccuracy", () => {
       played(1, 2, 2, 0, "2024-08-15"),
       played(3, 4, 0, 1, "2024-08-15"),
     ]);
-    expect(result).toEqual({ totalPredictions: 2, correctPredictions: 1, accuracy: 50 });
+    expect(result).toEqual({
+      totalPredictions: 2, correctPredictions: 1, accuracy: 50, exactScores: 0, exactScoreAccuracy: 0,
+    });
+  });
+
+  it("counts exact scorelines separately from correct outcomes", () => {
+    // With no history the model predicts 1-0 (home advantage only):
+    // the first match is exactly 1-0; the second is a home win but 3-0.
+    const result = predictionAccuracy([
+      played(1, 2, 1, 0, "2024-08-15"),
+      played(3, 4, 3, 0, "2024-08-15"),
+    ]);
+    expect(result).toEqual({
+      totalPredictions: 2, correctPredictions: 2, accuracy: 100, exactScores: 1, exactScoreAccuracy: 50,
+    });
   });
 
   it("always returns a percentage between 0 and 100", () => {
@@ -174,7 +190,11 @@ describe("predictionAccuracy", () => {
     const earlier = played(3, 2, 0, 4, "2024-09-01");
     const scored = played(1, 2, 0, 1, "2024-10-01");
 
-    expect(predictionAccuracy([scored])).toEqual({ totalPredictions: 1, correctPredictions: 0, accuracy: 0});
-    expect(predictionAccuracy([scored], [scored, earlier])).toEqual({ totalPredictions: 1, correctPredictions: 1, accuracy: 100 });
+    expect(predictionAccuracy([scored])).toEqual({
+      totalPredictions: 1, correctPredictions: 0, accuracy: 0, exactScores: 0, exactScoreAccuracy: 0,
+    });
+    expect(predictionAccuracy([scored], [scored, earlier])).toEqual({
+      totalPredictions: 1, correctPredictions: 1, accuracy: 100, exactScores: 0, exactScoreAccuracy: 0,
+    });
   });
 });

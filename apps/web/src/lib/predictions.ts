@@ -141,18 +141,29 @@ export function predictFromHistory(
 // Share of played matches whose predicted outcome (home win / draw / away win)
 // matched the real result. Each prediction is leak-free (predictFromHistory only
 // sees matches played before that fixture). Powers /api/predictions/accuracy.
+// `history` is what predictions learn from (defaults to `played`), so one
+// season can be scored while learning from every earlier season too.
+// Also counts exact scorelines — a much stricter, secondary measure.
 export function predictionAccuracy(
   played: { homeTeamId: number; awayTeamId: number; homeScore: number | null; awayScore: number | null; date: Date }[],
   history: typeof played = played
 ) {
-  const correctPredictions = played.reduce((sum, m) => {
+  let correctPredictions = 0;
+  let exactScores = 0;
+  for (const m of played) {
     const { predictedHome, predictedAway } = predictFromHistory(m, history);
-    return isPredictionCorrect(predictedHome, predictedAway, m.homeScore ?? 0, m.awayScore ?? 0)
-      ? sum + 1
-      : sum;
-  }, 0);
+    if (isPredictionCorrect(predictedHome, predictedAway, m.homeScore ?? 0, m.awayScore ?? 0)) correctPredictions++;
+    if (predictedHome === m.homeScore && predictedAway === m.awayScore) exactScores++;
+  }
 
-  const accuracy = played.length > 0 ? (correctPredictions / played.length) * 100 : 0;
+  const percent = (n: number) => (played.length > 0 ? (n / played.length) * 100 : 0);
 
-  return { totalPredictions: played.length, correctPredictions, accuracy };
+  return {
+    totalPredictions: played.length,
+    correctPredictions,
+    accuracy: percent(correctPredictions),
+    // Stricter measure shown alongside: the exact scoreline was right
+    exactScores,
+    exactScoreAccuracy: percent(exactScores),
+  };
 }
