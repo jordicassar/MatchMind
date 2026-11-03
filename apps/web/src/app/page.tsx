@@ -3,10 +3,12 @@
 //   1. Hero banner — league label and high-level stats (teams, upcoming, played)
 //   2. Teams grid — clickable cards linking to each team's detail page
 //   3. Matches grid — filterable by team, with a prediction button on upcoming matches
-// HeroStat and FilterPill are small single-use components kept inline here
-// since they are only relevant to this page.
+// The team and status filters are kept in the URL query (?status=&team=) so
+// they survive Back navigation. HeroStat and FilterPill are small single-use
+// components kept inline here since they are only relevant to this page.
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Trophy } from "lucide-react";
@@ -16,13 +18,34 @@ import MatchCard from "@/components/match/MatchCard";
 import type { Team, Match, Prediction } from "@/lib/types";
 import { CURRENT_SEASON, seasonLabel } from "@/lib/season";
 
-export default function Home() {
+function HomeContent() {
   const [isLoading, setIsLoading] = useState<number | null>(null);
-  const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [storePrediction, setStorePrediction] = useState<Record<number, Prediction>>({});
-  const [statusFilter, setStatusFilter] = useState<"all" | "upcoming" | "played">("all");
+
+  // Filters live in the URL (?status=played&team=7) rather than component
+  // state, so they survive navigating to a match and pressing Back, and a
+  // filtered view can be bookmarked or shared.
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const statusParam = searchParams.get("status");
+  const statusFilter: "all" | "upcoming" | "played" =
+    statusParam === "upcoming" || statusParam === "played" ? statusParam : "all";
+  const teamParam = Number(searchParams.get("team"));
+  const selectedTeam = Number.isInteger(teamParam) && teamParam > 0 ? teamParam : null;
+
+  // replace (not push): changing a filter shouldn't add a Back-button step
+  function updateFilters(status: typeof statusFilter, team: number | null) {
+    const params = new URLSearchParams();
+    if (status !== "all") params.set("status", status);
+    if (team !== null) params.set("team", String(team));
+    const query = params.toString();
+    router.replace(query ? `/?${query}` : "/", { scroll: false });
+  }
+  const setStatusFilter = (status: typeof statusFilter) => updateFilters(status, selectedTeam);
+  const setSelectedTeam = (team: number | null) => updateFilters(statusFilter, team);
 
   useEffect(() => {
     fetch("/api/teams").then((r) => r.json()).then(setTeams);
@@ -163,6 +186,16 @@ export default function Home() {
         </div>
       </section>
     </PageWrapper>
+  );
+}
+
+// useSearchParams needs a Suspense boundary, or the production build fails
+// for a page that's otherwise prerendered (see Next.js useSearchParams docs).
+export default function Home() {
+  return (
+    <Suspense>
+      <HomeContent />
+    </Suspense>
   );
 }
 
