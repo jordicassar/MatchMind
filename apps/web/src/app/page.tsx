@@ -8,6 +8,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PageWrapper from "@/components/layout/PageWrapper";
@@ -100,11 +101,15 @@ export default function Home() {
           {teams.map((team) => (
             <Link href={`/teams/${team.id}`} key={team.id}>
               <div className="group flex flex-col items-center rounded-xl border border-border bg-card p-4 text-center transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5">
-                <img
-                  src={team.crest ?? undefined}
-                  alt={team.name}
-                  className="mb-2 h-10 w-10 object-contain transition-transform group-hover:scale-110"
-                />
+                {team.crest && (
+                  <Image
+                    src={team.crest}
+                    alt={team.name}
+                    width={40}
+                    height={40}
+                    className="mb-2 h-10 w-10 object-contain transition-transform group-hover:scale-110"
+                  />
+                )}
                 <p className="line-clamp-2 text-[11px] font-medium leading-tight text-muted-foreground transition-colors group-hover:text-foreground">
                   {team.name}
                 </p>
@@ -138,7 +143,7 @@ export default function Home() {
                 active={selectedTeam === team.id}
                 onClick={() => setSelectedTeam(selectedTeam === team.id ? null : team.id)}
               >
-                <img src={team.crest ?? undefined} alt={team.name} className="h-4 w-4 object-contain" />
+                {team.crest && <Image src={team.crest} alt={team.name} width={16} height={16} className="h-4 w-4 object-contain" />}
                 {team.name.startsWith("Real ") ? team.name.slice(5) : team.name.split(" ")[0]}
               </FilterPill>
             ))}
