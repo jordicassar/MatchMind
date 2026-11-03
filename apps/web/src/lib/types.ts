@@ -119,6 +119,17 @@ export interface Accuracy {
   totalPredictions: number;
   correctPredictions: number;
   accuracy: number;
+  // Stricter measure: the exact scoreline was right
+  exactScores: number;
+  exactScoreAccuracy: number;
   season: string;
-  backtest: { season: string; totalPredictions: number; correctPredictions: number; accuracy: number };
+  // The 2024/25 leak-free backtest, shown alongside the live season
+  backtest: {
+    season: string;
+    totalPredictions: number;
+    correctPredictions: number;
+    accuracy: number;
+    exactScores: number;
+    exactScoreAccuracy: number;
+  };
 }

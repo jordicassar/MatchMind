@@ -1,10 +1,11 @@
 // Accuracy page — displays how well MatchMind's predictions have performed.
 // Fetches aggregated stats from /api/predictions/accuracy and renders them
-// as a circular progress ring, a linear progress bar, and three stat cards.
-// Shows an empty state if no predictions have been made yet.
+// as a circular progress ring, a linear progress bar, and four stat cards
+// (including the stricter exact-score rate).
+// Shows an empty state until the season's first matches have been played.
 "use client";
 import { useEffect, useState } from "react";
-import { Brain, CheckCircle2, Target } from "lucide-react";
+import { Brain, CheckCircle2, Crosshair, Target } from "lucide-react";
 import PageWrapper from "@/components/layout/PageWrapper";
 import type { Accuracy as AccuracyData } from "@/lib/types";
 
@@ -90,19 +91,19 @@ export default function Accuracy() {
                     </div>
 
                     {/* Stat cards — one per key metric */}
-                    <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-1 lg:gap-4">
+                    <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-1 lg:gap-4">
                         <StatCard
                             icon={Brain}
                             label="Total Predictions"
                             value={accuracy.totalPredictions}
-                            description="Matches where a prediction was requested"
+                            description="Played matches this season, each predicted before kick-off"
                             iconClass="text-chart-4"
                         />
                         <StatCard
                             icon={CheckCircle2}
                             label="Correct Predictions"
                             value={accuracy.correctPredictions}
-                            description="Predicted score matched the actual result"
+                            description="Predicted the right outcome — home win, draw or away win"
                             iconClass="text-chart-1"
                         />
                         <StatCard
@@ -113,15 +114,22 @@ export default function Accuracy() {
                             iconClass="text-primary"
                             highlight
                         />
+                        <StatCard
+                            icon={Crosshair}
+                            label="Exact Scores"
+                            value={`${Math.round(accuracy.exactScoreAccuracy)}%`}
+                            description={`Exact scoreline right in ${accuracy.exactScores} of ${accuracy.totalPredictions} matches — a much stricter test`}
+                            iconClass="text-chart-3"
+                        />
                     </div>
                 </div>
             ) : (
-                // Empty state — shown when no predictions have been made yet
+                // Empty state — shown before any match of the season has been played
                 <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card py-24">
                     <Brain className="mb-4 h-12 w-12 text-muted-foreground/40" />
-                    <p className="text-base font-medium text-foreground">No predictions yet</p>
+                    <p className="text-base font-medium text-foreground">No results yet</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                        Head to the home page and request a prediction to get started.
+                        Accuracy appears once this season&apos;s first matches have been played.
                     </p>
                 </div>
             )}
