@@ -16,3 +16,12 @@ export const CURRENT_SEASON = currentSeason();
 export function seasonLabel(season: number): string {
   return `${season}/${String((season + 1) % 100).padStart(2, "0")}`;
 }
+
+// Prisma filter for clubs with at least one match in the current season —
+// relegated clubs stay in the database as history but are left out.
+export const currentSeasonTeams = {
+  OR: [
+    { homeMatches: { some: { season: CURRENT_SEASON } } },
+    { awayMatches: { some: { season: CURRENT_SEASON } } },
+  ],
+};

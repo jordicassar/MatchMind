@@ -64,4 +64,3 @@ export async function POST(request: Request) {
 // Vercel Cron calls this route with GET. It sends
 // "Authorization: Bearer $CRON_SECRET" automatically, so the same guard applies.
 export const GET = POST;
-

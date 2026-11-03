@@ -4,19 +4,14 @@
 // For a single team's full profile and stats, see teams/[id]/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { CURRENT_SEASON } from "@/lib/season";
+import { currentSeasonTeams } from "@/lib/season";
 
 export async function GET() {
   try {
     // Only clubs with a match in the current season. Relegated clubs stay in
     // the database as model history but aren't shown.
     const teams = await prisma.team.findMany({
-      where: {
-        OR: [
-          { homeMatches: { some: { season: CURRENT_SEASON } } },
-          { awayMatches: { some: { season: CURRENT_SEASON } } },
-        ],
-      },
+      where: currentSeasonTeams,
       orderBy: { name: "asc" },
     });
     return NextResponse.json(teams);
