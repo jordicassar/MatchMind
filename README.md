@@ -110,7 +110,7 @@ curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/s
 curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/sync/teams     # venue + manager (rate-limited — re-run to finish)
 ```
 
-The `live_season_data` migration links the current season's clubs to football-data, so run the migrations before `/api/sync/fixtures`. Re-run `/api/sync/fixtures` to pick up new results and rescheduled matches.
+The `live_season_data` migration links the current season's clubs to football-data, so run the migrations before `/api/sync/fixtures`. In production it runs nightly via Vercel Cron; locally, re-run it to pick up new results and rescheduled matches. The team and squad syncs refresh every current-season club and take a few minutes because of API-Sports' rate limit, so run them locally (pointing `DATABASE_URL` at production when refreshing the live site) rather than through Vercel.
 
 Predictions and accuracy are computed on the fly from match history on each request — there's no prediction-generation step to run.
 
