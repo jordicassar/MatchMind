@@ -1,11 +1,3 @@
-// Home page — the main entry point of the application.
-// Fetches all teams and matches from the API on load and renders three sections:
-//   1. Hero banner — league label and high-level stats (teams, upcoming, played)
-//   2. Teams grid — clickable cards linking to each team's detail page
-//   3. Matches grid — filterable by team, with a prediction button on upcoming matches
-// The team and status filters are kept in the URL query (?status=&team=) so
-// they survive Back navigation. HeroStat and FilterPill are small single-use
-// components kept inline here since they are only relevant to this page.
 "use client";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -24,9 +16,6 @@ function HomeContent() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [storePrediction, setStorePrediction] = useState<Record<number, Prediction>>({});
 
-  // Filters live in the URL (?status=played&team=7) rather than component
-  // state, so they survive navigating to a match and pressing Back, and a
-  // filtered view can be bookmarked or shared.
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -36,7 +25,6 @@ function HomeContent() {
   const teamParam = Number(searchParams.get("team"));
   const selectedTeam = Number.isInteger(teamParam) && teamParam > 0 ? teamParam : null;
 
-  // replace (not push): changing a filter shouldn't add a Back-button step
   function updateFilters(status: typeof statusFilter, team: number | null) {
     const params = new URLSearchParams();
     if (status !== "all") params.set("status", status);
@@ -88,7 +76,6 @@ function HomeContent() {
 
   return (
     <PageWrapper>
-      {/* Hero */}
       <section className="relative mb-14 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card via-card to-primary/5 p-8 md:p-12">
         <div className="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-primary/8 to-transparent" />
         <div className="relative z-10">
@@ -117,7 +104,6 @@ function HomeContent() {
         </div>
       </section>
 
-      {/* Teams */}
       <section className="mb-14">
         <h2 className="mb-5 text-2xl font-bold text-foreground">Teams</h2>
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8">
@@ -142,7 +128,6 @@ function HomeContent() {
         </div>
       </section>
 
-      {/* Matches */}
       <section>
         <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -189,8 +174,6 @@ function HomeContent() {
   );
 }
 
-// useSearchParams needs a Suspense boundary, or the production build fails
-// for a page that's otherwise prerendered (see Next.js useSearchParams docs).
 export default function Home() {
   return (
     <Suspense>

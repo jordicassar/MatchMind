@@ -8,8 +8,6 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    # Dummy URL so `prisma generate` (postinstall) and `next build` have one.
-    # CI never connects to a database — it only lints, tests, and builds.
     env:
       DATABASE_URL: postgresql://user:password@localhost:5432/matchmind
     steps:
