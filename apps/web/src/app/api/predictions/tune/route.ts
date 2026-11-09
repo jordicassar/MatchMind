@@ -1,9 +1,3 @@
-// Model-tuning route - sweeps the form H2H blend weight to find the best one.
-// For every played match it recomputes the same form and head-to-head inputs
-// the production prediction uses, then measures outcome accuracy at a range of
-// form weights. Returns an accuracy-per-weight table (highest first) so the
-// 70/30 (initial split) can be replaced with whatever actually scores best.
-// Read-only - does not write predictions. See api/predictions for the live blend.
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { weightedAverage, blendScore, isPredictionCorrect } from "@/lib/predictions";
@@ -25,7 +19,6 @@ export async function GET(request: Request) {
     if (denied) return denied;
 
     try {
-        // One query: every played match, most recent first (matches production ordering).
         const played = (await prisma.match.findMany({
             where: { homeScore: { not: null }, awayScore: { not: null } },
             select: {
@@ -39,11 +32,9 @@ export async function GET(request: Request) {
             orderBy: { date: "desc" },
         })) as PlayedMatch[];
 
-        // Tally correct predictions per candidate weight.
         const correct: Record<number, number> = Object.fromEntries(WEIGHTS.map((w) => [w, 0]));
         
         for (const m of played) {
-            // Form: each team's goals in their own home/away games (same inputs as production).
             const formHome = weightedAverage(
                 played.filter((g) => g.homeTeamId === m.homeTeamId && g.date < m.date).map((g) => g.homeScore) 
             );
@@ -51,7 +42,6 @@ export async function GET(request: Request) {
                 played.filter((g) => g.awayTeamId === m.awayTeamId && g.date < m.date).map((g) => g.awayScore)
             );
 
-            // Head-to-head between the two teams, normalized to the home team's perspectives.
             const h2h = played.filter(
                 (g) => ((g.homeTeamId === m.homeTeamId && g.awayTeamId === m.awayTeamId) ||
                 (g.homeTeamId === m.awayTeamId && g.awayTeamId === m.homeTeamId)) && g.date < m.date
@@ -63,7 +53,6 @@ export async function GET(request: Request) {
             : 0;
 
             for (const w of WEIGHTS) {
-                // No H2H -> form only identical across weights (mirrors production fallback).
                 const predHome = hasH2H ? blendScore(formHome, h2hHome, w) : formHome;
                 const predAway = hasH2H ? blendScore(formAway, h2hAway, w) : formAway;
                 if (isPredictionCorrect(predHome, predAway, m.homeScore, m.awayScore)) correct[w]++;

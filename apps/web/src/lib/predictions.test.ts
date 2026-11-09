@@ -11,15 +11,9 @@ describe("weightedAverage", () => {
   });
 
   it("weights recent values (first in the list) more heavily", () => {
-    // [2, 0] => (2*2 + 0*1) / (2+1) = 4/3 ≈ 1.33 -> rounds to 1
     expect(weightedAverage([2, 0])).toBe(1);
-    // Reversing makes the recent value 0, pulling the average down
-    // [0, 2] => (0*2 + 2*1) / 3 = 2/3 ≈ 0.67 -> rounds to 1
     expect(weightedAverage([0, 2])).toBe(1);
-    // A clearer asymmetry: recent high vs recent low
-    // [4, 0, 0] => (4*3) / (3+2+1) = 12/6 = 2
     expect(weightedAverage([4, 0, 0])).toBe(2);
-    // [0, 0, 4] => (4*1) / 6 ≈ 0.67 -> rounds to 1
     expect(weightedAverage([0, 0, 4])).toBe(1);
   });
 
@@ -49,7 +43,6 @@ describe("outcome", () => {
 
 describe("isPredictionCorrect", () => {
   it("is correct when the predicted outcome matches the actual outcome", () => {
-    // Predicted a home win, home won (different scoreline still counts)
     expect(isPredictionCorrect(2, 1, 3, 0)).toBe(true);
   });
 
@@ -58,9 +51,7 @@ describe("isPredictionCorrect", () => {
   });
 
   it("is incorrect when the outcome differs", () => {
-    // Predicted a home win, match was a draw
     expect(isPredictionCorrect(2, 1, 1, 1)).toBe(false);
-    // Predicted a draw, away won
     expect(isPredictionCorrect(1, 1, 0, 2)).toBe(false);
   });
 });
@@ -75,12 +66,10 @@ describe("blendScore", () => {
   });
 
   it("weights form more heavily at w = 0.7", () => {
-    // 3*0.7 + 1*0.3 = 2.4 -> rounds to 2
     expect(blendScore(3, 1, 0.7)).toBe(2);
   });
 
   it("rounds the blended result to an integer", () => {
-    // 2*0.5 + 1*0.5 = 1.5 -> rounds to 2
     expect(blendScore(2, 1, 0.5)).toBe(2);
     expect(Number.isInteger(blendScore(3, 2, 0.7))).toBe(true);
   });
@@ -93,10 +82,9 @@ describe("pointsPerGame", () => {
 
   it("awards 3 for a win, 1 for a draw, from the team's perspective", () => {
     const games = [
-      { homeTeamId: 1, awayTeamId: 2, homeScore: 2, awayScore: 0 }, // team 1 home win
-      { homeTeamId: 3, awayTeamId: 1, homeScore: 1, awayScore: 1}, // team 1 away draw
+      { homeTeamId: 1, awayTeamId: 2, homeScore: 2, awayScore: 0 },
+      { homeTeamId: 3, awayTeamId: 1, homeScore: 1, awayScore: 1},
     ];
-    // (3 + 1) / 2 = 2.0
     expect(pointsPerGame(games, 1)).toBe(2);
   });
 });
@@ -116,7 +104,6 @@ describe("predictScore", () => {
   });
 });
 
-// Helper for the history-based tests below. Team ids: 1, 2, 3...
 const played = (homeTeamId: number, awayTeamId: number, homeScore: number, awayScore: number, date: string) => ({
   homeTeamId, awayTeamId, homeScore, awayScore, date: new Date(date),
 });
@@ -139,7 +126,6 @@ describe("predictFromHistory", () => {
 
   it("uses matches played before the fixture", () => {
     const noHistory = predictFromHistory(fixture, []);
-    // Team 1 thrashed someone at home a month earlier
     const withHistory = predictFromHistory(fixture, [played(1, 3, 4, 0, "2024-09-01")]);
     expect(withHistory.predictedHome).toBeGreaterThan(noHistory.predictedHome);
   });
@@ -153,8 +139,6 @@ describe("predictionAccuracy", () => {
   });
 
   it("counts correct and incorrect outcome predictions", () => {
-    // With no prior history the model only has home advantage, so it predicts
-    // a home win for both. The first really is a home win; the second isn't.
     const result = predictionAccuracy([
       played(1, 2, 2, 0, "2024-08-15"),
       played(3, 4, 0, 1, "2024-08-15"),
@@ -165,8 +149,6 @@ describe("predictionAccuracy", () => {
   });
 
   it("counts exact scorelines separately from correct outcomes", () => {
-    // With no history the model predicts 1-0 (home advantage only):
-    // the first match is exactly 1-0; the second is a home win but 3-0.
     const result = predictionAccuracy([
       played(1, 2, 1, 0, "2024-08-15"),
       played(3, 4, 3, 0, "2024-08-15"),

@@ -1,17 +1,10 @@
-// Model experiment v3 - adds a team-strength signal on top of v2
-// (attack/defense + home advantage). The goal is to beat the ~45% "always
-// home win" baseline by identifying genuine mismatches: a strong away team at
-// a weak home team should pull the prediction away from a home win.
-// Strength = points per game (3 win / 1 draw) from each team's prior matches.
-// Home advantage is fixed at v2's best (0.75); we sweep the strength weight.
-// Leak-free: only matches played before each fixture are used. Read-only.
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isPredictionCorrect } from "@/lib/predictions";
 import { requireSyncSecret } from "@/lib/auth";
 
-const HOME_ADV = 0.75; // fixed at v2's plateau host
-const STRENGTH_K = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]; // strength weight to sweep
+const HOME_ADV = 0.75;
+const STRENGTH_K = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
 
 type PlayedMatch = {
     date: Date,
@@ -21,7 +14,6 @@ type PlayedMatch = {
     awayScore: number,
 };
 
-// Unrounded weighred average forwarding recent games.
 function wavg(values: number[]): number {
     if (values.length === 0) return 0;
     const n = values.length;
@@ -29,7 +21,6 @@ function wavg(values: number[]): number {
     return total / ((n * ( n + 1)) / 2);
 }
 
-// Points per game for a team across its matches played before `before`.
 function ppg(teamId: number, before: Date, played: PlayedMatch[]): number {
     const games = played.filter(
         (g) => (g.homeTeamId == teamId || g.awayTeamId === teamId) && g.date < before
@@ -70,7 +61,6 @@ export async function GET(request: Request) {
             const expHome = (homeAttack + awayDefense) / 2;
             const expAway = (awayAttack + homeDefense) / 2;
 
-            // Strength differential (positive => home is the stronger side).
             const strengthDiff = ppg(m.homeTeamId, m.date, played) - ppg(m.awayTeamId, m.date, played);
 
             for (const k of STRENGTH_K) {

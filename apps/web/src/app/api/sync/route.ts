@@ -1,13 +1,8 @@
-// Match sync route — seeds the database from the API-Sports fixtures feed.
-// For each fixture it upserts both teams (by name) and then the match (by
-// externalId), so the route is safe to re-run: existing records are updated
-// with the latest crests and scores rather than duplicated.
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fetchMatches } from "@/lib/footballApi";
 import { requireSyncSecret } from "@/lib/auth";
 
-// Minimal shape of the API-Sports fixtures response — only the fields used here.
 interface ApiSquadTeam {
   id: number;
   name: string;

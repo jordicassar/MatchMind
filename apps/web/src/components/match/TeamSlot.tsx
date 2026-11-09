@@ -1,6 +1,3 @@
-// TeamSlot — shared sub-component used inside MatchCard and HistoryCard.
-// Renders a single team's crest image and name, used twice per card
-// to represent the home and away sides of a match.
 import Image from "next/image";
 
 export default function TeamSlot({ crest, name }: { crest: string | null; name: string }) {

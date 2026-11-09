@@ -1,7 +1,3 @@
-// Badge — auto-generated shadcn UI component, do not edit manually.
-// Small inline label used to display status tags such as "Upcoming", "Full Time",
-// "Win", "Loss", and "Draw" across MatchCard and HistoryCard.
-// Supports six variants: default, secondary, destructive, outline, ghost, and link.
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 import { cva, type VariantProps } from "class-variance-authority"

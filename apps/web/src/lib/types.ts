@@ -1,8 +1,3 @@
-// Shared domain types — the shapes returned by the API routes and consumed
-// by the pages and components. Mirrors the Prisma models plus the computed
-// fields (stats, standings rows, prediction breakdowns) that the routes add
-// on top. Kept in one place so the frontend and route handlers agree on shape.
-
 export interface Team {
   id: number;
   externalId: number | null;
@@ -58,7 +53,6 @@ export interface TeamStats {
   matchesPlayed: number;
 }
 
-// Full profile returned by /api/teams/[id].
 export interface TeamProfile {
   team: Team;
   stats: TeamStats;
@@ -81,9 +75,6 @@ export interface H2HMatch {
   awayScore: number | null;
 }
 
-// Prediction breakdown returned by /api/matches/[id]/breakdown.
-// Explains the tuned model: attack/defense expected goals, home advantage,
-// team strength (PPG), plus head-to-head history for context.
 export interface Breakdown {
   predictedHome: number;
   predictedAway: number;
@@ -101,7 +92,6 @@ export interface Breakdown {
   h2hMatches: H2HMatch[];
 }
 
-// One row of the league table returned by /api/standings.
 export interface StandingsRow {
   team: { id: number; name: string; crest: string | null };
   played: number;
@@ -114,16 +104,13 @@ export interface StandingsRow {
   pts: number;
 }
 
-// Aggregate prediction performance returned by /api/predictions/accuracy.
 export interface Accuracy {
   totalPredictions: number;
   correctPredictions: number;
   accuracy: number;
-  // Stricter measure: the exact scoreline was right
   exactScores: number;
   exactScoreAccuracy: number;
   season: string;
-  // The 2024/25 leak-free backtest, shown alongside the live season
   backtest: {
     season: string;
     totalPredictions: number;

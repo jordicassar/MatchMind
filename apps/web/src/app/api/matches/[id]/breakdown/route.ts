@@ -1,8 +1,3 @@
-// Prediction breakdown route — explains a single match's prediction.
-// Recomputes the tuned model's inputs (leak-free) and returns the signals
-// behind the predicted score: attack/defense expected goals, home advantage,
-// and each team's points-per-game (strength). Also returns head-to-head
-// history for context only — the model no longer uses H2H.
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { predictScore } from "@/lib/predictions";
@@ -17,7 +12,6 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     const match = await prisma.match.findUnique({ where: { id: parseInt(id) } });
     if (!match) return NextResponse.json({ message: "Match not found" }, { status: 404 });
 
-    // Only matches played before this fixture — leak-free, same as the model.
     const prior = { homeScore: { not: null }, awayScore: { not: null }, date: { lt: match.date } };
 
     const [homeHomeGames, awayAwayGames, homeAllGames, awayAllGames, h2hMatches] = await Promise.all([
@@ -31,7 +25,6 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
         where: { ...prior, OR: [{ homeTeamId: match.awayTeamId }, { awayTeamId: match.awayTeamId }] },
         orderBy: { date: "desc" },
       }),
-      // Past meetings between the two teams (context only).
       prisma.match.findMany({
         where: {
           homeScore: { not: null },
@@ -54,7 +47,6 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       awayAllGames,
     });
 
-    // H2H record from the home team's perspective (context only).
     const h2hRecord = h2hMatches.reduce(
       (acc, m) => {
         const homeWon =

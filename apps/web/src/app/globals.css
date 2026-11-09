@@ -49,7 +49,6 @@
 }
 
 :root {
-  /* Light mode — kept as a neutral fallback */
   --background: oklch(0.97 0.005 264);
   --foreground: oklch(0.15 0.02 264);
   --card: oklch(1 0 0);
@@ -85,7 +84,6 @@
 }
 
 .dark {
-  /* Sports dark theme — deep navy background with green accent */
   --background: oklch(0.11 0.015 264);
   --foreground: oklch(0.95 0.005 264);
   --card: oklch(0.17 0.015 264);

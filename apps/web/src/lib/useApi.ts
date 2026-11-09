@@ -1,7 +1,3 @@
-// useApi — client-side fetch hook for the page components.
-// Returns { data, notFound }: data is null while loading; notFound is true
-// when the API answers 404. Any other failure (network error, 500) is thrown
-// during render so the nearest error.tsx boundary shows the error screen.
 "use client";
 import { useEffect, useState } from "react";
 

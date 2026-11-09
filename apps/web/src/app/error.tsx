@@ -1,6 +1,3 @@
-// Error boundary — catches errors thrown while rendering any page (including
-// failed API requests surfaced by useApi) and shows a recovery screen instead
-// of Next.js's default. "Try again" re-mounts the page, which refetches its data.
 "use client";
 import { useEffect } from "react";
 import Link from "next/link";

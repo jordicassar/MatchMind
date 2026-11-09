@@ -1,5 +1,3 @@
-// Not-found page — shown for unknown URLs, and rendered by the team and match
-// pages when the requested ID doesn't exist.
 import Link from "next/link";
 import PageWrapper from "@/components/layout/PageWrapper";
 

@@ -1,8 +1,3 @@
-// standings — builds the league table from played matches. Kept as a pure
-// function (no database access) so it can be unit-tested; the /api/standings
-// route fetches the matches and passes them in.
-// Points: 3 per win, 1 per draw. Sorted by points, then goal difference, then
-// goals scored, then team name.
 import type { StandingsRow } from "./types";
 
 type StandingsTeam = { id: number; name: string; crest: string | null };
@@ -21,7 +16,6 @@ export function computeStandings(matches: StandingsMatch[]): StandingsRow[] {
 
   function entry(team: StandingsTeam): Tally {
     if (!table.has(team.id)) {
-      // Copy only the fields the table needs, not the whole team record
       table.set(team.id, {
         team: { id: team.id, name: team.name, crest: team.crest },
         played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0,
@@ -31,7 +25,7 @@ export function computeStandings(matches: StandingsMatch[]): StandingsRow[] {
   }
 
   for (const m of matches) {
-    if (m.homeScore === null || m.awayScore === null) continue; // not played yet
+    if (m.homeScore === null || m.awayScore === null) continue;
     const h = m.homeScore;
     const a = m.awayScore;
     const home = entry(m.homeTeam);

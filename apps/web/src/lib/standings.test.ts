@@ -24,7 +24,6 @@ describe("computeStandings", () => {
   });
 
   it("tallies wins, draws, losses, goals and points", () => {
-    // A 2-1 B, B 1-1 C, C 0-3 A
     const [first, second, third] = computeStandings([
       game(A, B, 2, 1),
       game(B, C, 1, 1),
@@ -43,13 +42,11 @@ describe("computeStandings", () => {
   });
 
   it("breaks ties on points and goal difference by goals scored", () => {
-    // A and B both win by one goal, but B scores more; same for D over C
     const order = computeStandings([game(A, C, 1, 0), game(B, D, 3, 2)]).map((r) => r.team.name);
     expect(order).toEqual(["Betis", "Athletic", "Deportivo", "Celta"]);
   });
 
   it("falls back to alphabetical order when everything else is equal", () => {
-    // Betis is the home side, but Athletic sorts first by name
     const order = computeStandings([game(B, A, 2, 2)]).map((r) => r.team.name);
     expect(order).toEqual(["Athletic", "Betis"]);
   });

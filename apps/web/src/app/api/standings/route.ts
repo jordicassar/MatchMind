@@ -1,5 +1,3 @@
-// Standings route — returns the league table computed from played matches.
-// The table logic lives in lib/standings.ts so it can be unit-tested.
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { computeStandings } from "@/lib/standings";
