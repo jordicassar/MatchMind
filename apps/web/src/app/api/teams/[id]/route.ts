@@ -1,7 +1,3 @@
-// Single team route — builds the full profile shown on the team detail page.
-// Fetches the team, its current-season matches (home and away, most recent
-// first) and its squad, then derives season stats (wins/draws/losses, goals
-// scored and conceded) from the played matches.
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { CURRENT_SEASON } from "@/lib/season";

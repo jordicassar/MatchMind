@@ -1,9 +1,3 @@
-// HistoryCard — match card used on the team detail page.
-// Displays both upcoming and played matches for a specific team.
-// For played matches, derives the result (Win/Loss/Draw) relative to the
-// team being viewed and applies colour-coded left border and badge accordingly:
-// green = win, red = loss, amber = draw.
-// For the home page match card with prediction functionality, see MatchCard.tsx.
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";

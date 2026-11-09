@@ -1,7 +1,3 @@
-// Root layout — wraps every page in the app.
-// Defines the HTML shell, loads the Geist fonts, applies the dark class,
-// and renders the Navbar above all page content.
-// Anything placed here is persistent across all route navigations.
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";

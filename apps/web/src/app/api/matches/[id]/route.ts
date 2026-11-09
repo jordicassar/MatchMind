@@ -1,5 +1,3 @@
-// Single match route — returns one match with a freshly computed prediction.
-// Scores are written only by the protected /api/sync route.
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { predictFromHistory } from "@/lib/predictions";
@@ -14,7 +12,6 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     });
     if (!match) return NextResponse.json({ message: "Match not found" }, { status: 404 });
 
-    // History the model predicts from, then a freshly computed prediction.
     const played = await prisma.match.findMany({
       where: { homeScore: { not: null }, awayScore: { not: null } },
       orderBy: { date: "desc" },

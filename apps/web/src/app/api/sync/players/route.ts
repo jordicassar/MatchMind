@@ -1,16 +1,8 @@
-// Player sync route — refreshes each current-season club's squad from the
-// API-Sports squads endpoint (the current squad, with photos). Players are
-// upserted on their externalId, so a player who moved between La Liga clubs
-// is moved, and players no longer in a club's squad are removed. If a squad
-// comes back empty (e.g. rate limited), that club is left unchanged and
-// reported. One request per club; the free tier allows ~10 a minute, hence
-// the delay (20 clubs take about 2–3 minutes).
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireSyncSecret } from "@/lib/auth";
 import { currentSeasonTeams } from "@/lib/season";
 
-// Minimal shape of the API-Sports squads response — only the fields used here.
 interface ApiSquadPlayer {
   id: number;
   name: string;
@@ -43,7 +35,6 @@ export async function POST(request: Request) {
       const players = data.response?.[0]?.players ?? [];
 
       if (players.length === 0) {
-        // Empty usually means rate limited — keep the existing squad
         skipped.push(team.name);
       } else {
         for (const p of players) {
@@ -55,7 +46,6 @@ export async function POST(request: Request) {
           });
         }
 
-        // Remove players who have left this club's squad
         const left = await prisma.player.deleteMany({
           where: { teamId: team.id, externalId: { notIn: players.map((p) => p.id) } },
         });

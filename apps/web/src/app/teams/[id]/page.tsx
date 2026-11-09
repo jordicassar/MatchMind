@@ -1,8 +1,3 @@
-// Team detail page — displays a full profile for a single team.
-// The team ID comes from the dynamic URL segment (/teams/[id]) and is used
-// to fetch that team's stats and match history from /api/teams/:id.
-// Renders a hero header, seven stat tiles, an upcoming matches section,
-// and a colour-coded match history (green = win, red = loss, amber = draw).
 "use client";
 import { useState, use } from "react";
 import Image from "next/image";
@@ -66,7 +61,6 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
 
   return (
     <PageWrapper>
-      {/* Team hero */}
       <section className="relative mb-10 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card via-card to-primary/5 p-8">
         <div className="pointer-events-none absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-primary/8 to-transparent" />
         <div className="relative z-10 flex items-center gap-6">
@@ -97,7 +91,6 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
         </div>
       </section>
 
-      {/* Stat tiles */}
       <div className={cn("mb-12 grid grid-cols-2 gap-3 sm:grid-cols-4", statTiles.length === 7 ? "lg:grid-cols-7" : "lg:grid-cols-6")}>
         {statTiles.map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="flex flex-col items-center rounded-xl border border-border bg-card p-4 text-center">
@@ -108,7 +101,6 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
         ))}
       </div>
 
-      {/* Tabs */}
       <div className="mb-6 flex gap-1 rounded-xl border border-border bg-card p-1">
         {[
           { key: "upcoming", label: "Upcoming Matches" },
@@ -131,9 +123,7 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
           </button>
         ))} 
       </div>
-      {/* Tab content */}
 
-      {/* Upcoming Matches Tab */}
       {activeTab === "upcoming" && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {upcomingMatches.length === 0 ? (
@@ -152,7 +142,6 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
         </div>
       )}
 
-      {/* Match History Tab */}
       {activeTab === "history" && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {playedMatches.length === 0 ? (
@@ -165,7 +154,6 @@ export default function TeamDetail({ params }: { params: Promise<{ id: string }>
         </div>
       )}
 
-      {/* Squad Tab */}
       {activeTab === "squad" && (
         <div>
           {["Goalkeeper", "Defender", "Midfielder", "Attacker"].map((pos) => {

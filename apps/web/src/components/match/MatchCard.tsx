@@ -1,9 +1,3 @@
-// MatchCard — match card used on the home page.
-// Displays a match with its status (Upcoming / Full Time), both team crests and names,
-// and the final score if the match has been played.
-// For upcoming matches, renders a prediction button that calls /api/predictions
-// and displays the predicted score once returned.
-// For the team detail page match card with result colour coding, see HistoryCard.tsx.
 "use client";
 import Link from "next/link";
 import { Loader2, Sparkles } from "lucide-react";

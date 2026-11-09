@@ -9,8 +9,6 @@ const coach = (name: string, teamId: number, start: string, end: string | null):
 
 describe("pickCurrentCoach", () => {
   it("ignores former coaches and picks the most recent current one", () => {
-    // Real API-Sports data for Barcelona: Xavi has left, and R. Sanchez is
-    // listed as current but started before Flick
     const coaches = [
       coach("Xavi", BARCA, "2021-11-01", "2024-05-01"),
       coach("H. Flick", BARCA, "2024-05-01", null),

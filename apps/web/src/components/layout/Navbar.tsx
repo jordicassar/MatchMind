@@ -1,7 +1,3 @@
-// Navbar — fixed top navigation bar rendered on every page via layout.tsx.
-// Displays the MatchMind brand on the left and nav links on the right.
-// Uses usePathname to highlight the active route with a green tint.
-// Marked as a client component because usePathname requires browser context.
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,13 +16,11 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 inset-x-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand */}
         <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight text-foreground hover:text-primary transition-colors">
           <Brain className="h-6 w-6 text-primary" />
           MatchMind
         </Link>
 
-        {/* Nav links */}
         <nav className="flex items-center gap-1">
           {navLinks.map(({ href, label }) => (
             <Link

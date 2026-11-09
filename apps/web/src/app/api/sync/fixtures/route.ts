@@ -1,9 +1,3 @@
-// Fixtures sync — imports the current La Liga season from football-data.org.
-// Upserts every match on its football-data id (fdId), so it's safe to re-run:
-// new fixtures are created, and dates and final scores are updated as the
-// season goes on. Teams are matched on Team.fdId (linked in the
-// live_season_data migration). Cancelled matches are skipped. One API request
-// per run.
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireSyncSecret } from "@/lib/auth";
@@ -32,7 +26,6 @@ export async function POST(request: Request) {
       const homeTeamId = teamIdByFdId.get(m.homeTeam.id);
       const awayTeamId = teamIdByFdId.get(m.awayTeam.id);
       if (!homeTeamId || !awayTeamId) {
-        // A club with no fdId link — reported so it can be added, not guessed
         unmatched.push(`${m.homeTeam.name} vs ${m.awayTeam.name}`);
         continue;
       }
@@ -61,6 +54,4 @@ export async function POST(request: Request) {
   }
 }
 
-// Vercel Cron calls this route with GET. It sends
-// "Authorization: Bearer $CRON_SECRET" automatically, so the same guard applies.
 export const GET = POST;
