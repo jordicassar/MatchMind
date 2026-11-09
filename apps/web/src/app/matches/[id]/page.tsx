@@ -1,8 +1,3 @@
-// Match detail page — the full view for a single match (/matches/[id]).
-// Fetches the match itself and, in parallel, its prediction breakdown.
-// Renders the teams and score, the model prediction (with a correct/incorrect
-// marker on played matches), the form and H2H breakdown behind the
-// prediction, and a list of past head-to-head meetings.
 "use client";
 import { use } from "react";
 import { Calendar, Sparkles } from "lucide-react";
@@ -34,7 +29,6 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
   return (
     <PageWrapper>
       <div className="mx-auto max-w-lg">
-        {/* Match card */}
         <div className="rounded-2xl border border-border bg-card p-8">
           <div className="mb-6 flex justify-center">
             <Badge
@@ -45,7 +39,6 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
             </Badge>
           </div>
 
-          {/* Teams and score */}
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
               <TeamSlot crest={match.homeTeam.crest} name={match.homeTeam.name} />
@@ -64,13 +57,11 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
             </div>
           </div>
 
-          {/* Date */}
           <div className="mt-6 flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />
             <span>{date.toLocaleDateString("en-GB", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</span>
           </div>
 
-          {/* Prediction */}
           {match.prediction && (
             <div className="mt-6 rounded-xl border border-primary/20 bg-primary/5 px-4 py-4 text-center">
               <p className="mb-1 flex items-center justify-center gap-1 text-[11px] uppercase tracking-wider text-primary/70">
@@ -107,7 +98,6 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
 
           {breakdown && (
             <div className="mt-6 space-y-4">
-              {/* Expected goals: each team's attack vs the opponent's defense */}
               <div>
                 <p className="mb-2 text-[11px] uppercase tracking-wider text-muted-foreground">
                   Expected Goals (attack vs opponent defense)
@@ -130,7 +120,6 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
                 </div>
               </div>
 
-              {/* Team strength: points per game */}
               <div>
                 <p className="mb-2 text-[11px] uppercase tracking-wider text-muted-foreground">
                   Team Strength (points per game)
@@ -147,19 +136,16 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
                 </div>
               </div>
 
-              {/* Model note */}
               <p className="text-center text-[11px] text-muted-foreground">
                 Expected goals + {breakdown.homeAdvantage} home advantage + team-strength adjustment
               </p>
             </div>
           )}
 
-
           {breakdown && breakdown.h2hCount > 0 && (
             <div className="mt-6 rounded-2xl border border-border bg-card p-6">
               <h2 className="mb-4 text-lg font-bold text-foreground">Head-to-Head</h2>
               
-              {/* Record summary */}
               <div className="mb-6 flex justify-between gap-3">
                 <div className="flex-1 rounded-lg border border-border bg-background p-3 text-center">
                   <p className="text-2xl font-bold text-chart-1">{breakdown.h2hRecord.homeWins}</p>
@@ -175,7 +161,6 @@ export default function MatchDetail({ params }: { params: Promise<{ id: string }
                 </div>
               </div>
 
-              {/* Past meetings */}
               {breakdown.h2hMatches?.length > 0 && (
                 <div className="space-y-2">
                   <p className="mb-3 text-[11px] uppercase tracking-wider text-muted-foreground">Past Meetings</p>

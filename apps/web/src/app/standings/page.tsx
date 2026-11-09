@@ -1,7 +1,3 @@
-// Standings page — renders the full La Liga table from /api/standings.
-// Each row shows played/won/drawn/lost, goals for/against, goal difference
-// and points, with team names linking to their detail page. The top four
-// rows get a green left border to mark the Champions League places.
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
